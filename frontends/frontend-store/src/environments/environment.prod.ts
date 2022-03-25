@@ -3,7 +3,7 @@ export const environment = {
   storeUrl:
     window['env']['storeUrl'] || 'http://localhost:8082',
   reviewsUrl:
-    window['env']['reviewsUrl'] || 'http://localhost:8082',
+    window['env']['reviewsUrl'] || 'http://localhost:3000',
   catalogUrl:
-    window['env']['catalogUrl'] || 'http://localhost:8082'
+    window['env']['catalogUrl'] || 'http://localhost:8081'
 };
