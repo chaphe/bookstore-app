@@ -8,7 +8,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - 'mongodb-reviews-vol:/data/configdb'
+      - 'mongodb-reviews-vol:/data/db'
     image: 'mongo:5.0.5'
     networks:
       - book-store-network
@@ -29,7 +29,7 @@ services:
     container_name: frontend-reviews
     image: 'chaphe/frontend-reviews-image:1.0'
     environment:
-      - REVIEWS_URL=http://164.92.73.70:3000
+      - REVIEWS_URL=http://localhost:3000
     ports:
       - "81:80"
     depends_on:
@@ -125,9 +125,9 @@ services:
     container_name: frontend-store
     image: 'chaphe/frontend-store-image:1.0'
     environment:
-      - STORE_URL=http://164.92.73.70:8082
-      - REVIEWS_URL=http://164.92.73.70:3000
-      - CATALOG_URL=http://164.92.73.70:8081
+      - STORE_URL=http://localhost:8082
+      - REVIEWS_URL=http://localhost:3000
+      - CATALOG_URL=http://localhost:8081
     ports:
       - "80:80"
     depends_on:

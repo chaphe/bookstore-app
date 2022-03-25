@@ -34,6 +34,9 @@
       <br>
       <span class="author">{{item.autor}}</span>
       <br>
+      <br>
+      <span class="author">{{item.isbn}</span>
+      <br>
       <div style="display: inline-flex; align-items: center; justify-content: space-between;">
         <img [src]="'./assets/estrellas'+round(GetMeanStars(item.isbn))+'.png'" width="80%">
         <span>{{GetMeanStars(item.isbn)}}</span>
