@@ -1,0 +1,50 @@
+version: "3.2"
+
+services:
+
+  mongo:
+    container_name: mongodb-reviews
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongodb-reviews-vol:/data/db'
+    image: 'mongo:5.0.5'
+    networks:
+      - book-store-network
+
+  # CATALOG
+  mysql:
+    image: 'mysql:8.0.27'
+    container_name: mysql-library
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=catalog-library
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-library-vol:/var/lib/mysql
+    networks:
+      - book-store-network
+
+
+  rabbitmq:
+    container_name: 'rabbitmq'
+    image: rabbitmq:3.9.13-management
+    ports:
+        - 5672:5672
+        - 15672:15672
+    networks:
+        - book-store-network
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest 
+      - RABBITMQ_DEFAULT_PASS=guest
+
+volumes:
+  mysql-library-vol:
+    external: false
+  mongodb-reviews-vol:
+    external: false
+
+networks:
+  book-store-network:
+    driver: bridge

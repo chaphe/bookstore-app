@@ -7,7 +7,7 @@ function App() {
   return (<>
     <div className="toolbar">
       <img width="40" src={logo} />
-      <span>Reseñas</span>
+      <span>Catalogo</span>
       <div className="spacer"></div>
     </div>
     <div className="content">

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-var reseñasModel = mongoose.model("reviewsModel",
+var reviewModel = mongoose.model("reviewsModel",
     {
         usuario: String,
         isbn: String,
@@ -8,4 +8,4 @@ var reseñasModel = mongoose.model("reviewsModel",
         comentario: String
     }, "reviews");
 
-module.exports = reseñasModel;
+module.exports = reviewModel;
