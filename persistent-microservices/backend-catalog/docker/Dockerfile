@@ -1,4 +1,4 @@
-#FROM openjdk:8-alpine
+#FROM openjdk:8-alpine 
 # Imagen de base openjdk 11, en caso de usar java 8 mirar la primera linea
 #FROM openjdk:11
 FROM eclipse-temurin:11-alpine

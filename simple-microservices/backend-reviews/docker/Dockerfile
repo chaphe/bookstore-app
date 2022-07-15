@@ -1,7 +1,7 @@
 FROM node:16-alpine
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-# Create app directory
+# Create app directory 
 WORKDIR /home/node/app
 
 # Install app dependencies
