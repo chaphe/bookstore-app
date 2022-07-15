@@ -1,7 +1,7 @@
 FROM node:17.1-alpine3.12
 
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-# Create app directory 
+# Create app directory
 WORKDIR /home/node/app
 
 #Define las variables de ambiente
