@@ -1,5 +1,5 @@
 # Build commands for Frontends
-
+ 
 ```
 docker build -t frontend-catalog-image -f docker/Dockerfile .
 ```
