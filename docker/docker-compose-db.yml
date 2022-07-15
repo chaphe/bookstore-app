@@ -2,7 +2,7 @@ version: "3.2"
 
 services:
 
-  mongo:
+  mongodb-reviews:
     container_name: mongodb-reviews
     ports:
       - '27017:27017'

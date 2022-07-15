@@ -9,8 +9,6 @@ services:
       - MONGODB_HOST=mongodb-reviews
     ports:
       - "3000:3000"
-    depends_on:
-      - mongo
     networks:
       - book-store-network
 
@@ -20,8 +18,6 @@ services:
     image: 'chaphe/backend-catalog-image:1.0'
     ports:
       - "8081:8081"
-    depends_on:
-      - mysql
     networks:
       - book-store-network
     #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
@@ -31,14 +27,14 @@ services:
       - WAIT_HOSTS_TIMEOUT=250
       - WAIT_SLEEP_INTERVAL=10
       - WAIT_HOST_CONNECT_TIMEOUT=20
-      - MYSQL_DB_HOST=private-db-mysql-sfo3-96523-do-user-11351422-0.b.db.ondigitalocean.com
-      - MYSQL_DB_PORT=25060
-      - MYSQL_DB_USERNAME=doadmin
-      - MYSQL_DB_PASSWORD=AVNS_NB-w6meWYgRCN1H
+      - MYSQL_DB_HOST=mysql-library
+      - MYSQL_DB_PORT=3306
+      #- MYSQL_DB_USERNAME=doadmin
+      #- MYSQL_DB_PASSWORD=AVNS_NB-w6meWYgRCN1H
       #- MYSQL_DB_HOST=mysql-library
       #- MYSQL_DB_PORT=3306
-      #- MYSQL_DB_USERNAME=root
-      #- MYSQL_DB_PASSWORD=password
+      - MYSQL_DB_USERNAME=root
+      - MYSQL_DB_PASSWORD=password
 
   # STORE
 
@@ -47,9 +43,6 @@ services:
     image: 'chaphe/backend-store-image:1.0'
     ports:
       - "8082:8082"
-    depends_on:
-      - mysql
-      - rabbitmq
     networks:
       - book-store-network
     #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
@@ -71,9 +64,7 @@ services:
     container_name: backend-shipping
     image: 'chaphe/backend-shipping-image:1.0'
     ports:
-      - "3001:3000"
-    depends_on:
-      - rabbitmq      
+      - "3001:3000"  
     networks:
       - book-store-network
     environment:  

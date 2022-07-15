@@ -9,8 +9,6 @@ services:
       - REVIEWS_URL=http://localhost:3000
     ports:
       - "81:80"
-    depends_on:
-      - backend-reviews
     networks:
       - book-store-network
 
@@ -21,8 +19,6 @@ services:
     image: 'chaphe/frontend-catalog-image:1.0'
     ports:
       - "82:80"
-    depends_on:
-      - backend-catalog
     networks:
       - book-store-network
 
@@ -37,9 +33,10 @@ services:
       - CATALOG_URL=http://137.184.238.11:8081
     ports:
       - "80:80"
-    depends_on:
-      - backend-store
     networks:
       - book-store-network
 
       
+networks:
+  book-store-network:
+    driver: bridge
