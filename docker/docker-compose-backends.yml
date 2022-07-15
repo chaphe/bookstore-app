@@ -1,0 +1,75 @@
+version: "3.2"
+
+services:
+
+  backend-reviews:
+    container_name: backend-reviews
+    image: 'chaphe/backend-reviews-image:1.0'
+    environment:
+      - MONGODB_HOST=mongodb-reviews
+    ports:
+      - "3000:3000"
+    networks:
+      - book-store-network
+
+  # CATALOG
+  backend-catalog:
+    container_name: backend-catalog
+    image: 'chaphe/backend-catalog-image:1.0'
+    ports:
+      - "8081:8081"
+    networks:
+      - book-store-network
+    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
+    #command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=250
+      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_HOST_CONNECT_TIMEOUT=20
+      - MYSQL_DB_HOST=mysql-library
+      - MYSQL_DB_PORT=3306
+      #- MYSQL_DB_USERNAME=doadmin
+      #- MYSQL_DB_PASSWORD=AVNS_NB-w6meWYgRCN1H
+      #- MYSQL_DB_HOST=mysql-library
+      #- MYSQL_DB_PORT=3306
+      - MYSQL_DB_USERNAME=root
+      - MYSQL_DB_PASSWORD=password
+
+  # STORE
+
+  backend-store:
+    container_name: backend-store
+    image: 'chaphe/backend-store-image:1.0'
+    ports:
+      - "8082:8082"
+    networks:
+      - book-store-network
+    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
+    #command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=250
+      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_HOST_CONNECT_TIMEOUT=20
+      - MYSQL_DB_HOST=mysql-library
+      - MYSQL_DB_PORT=3306
+      - MYSQL_DB_USERNAME=root
+      - MYSQL_DB_PASSWORD=password
+      - RABBITMQ_HOST=rabbitmq
+
+
+  # Shipping Service
+  backend-shipping:
+    container_name: backend-shipping
+    image: 'chaphe/backend-shipping-image:1.0'
+    ports:
+      - "3001:3000"  
+    networks:
+      - book-store-network
+    environment:  
+      - RABBITMQ_HOST=rabbitmq          
+
+networks:
+  book-store-network:
+    driver: bridge
