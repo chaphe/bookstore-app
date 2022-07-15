@@ -77,7 +77,6 @@ Para empezar hay que desplegar un contenedor con el servicio de base de datos Mo
 ```
 docker run --name=mongodb-reviews --network=library-network -d -p 27017:27017 mongo:5.0.5
 ```
-Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 
 2. Con volumen identificado
 
@@ -93,7 +92,7 @@ Una vez ejecutado el script podemos desplegar el contenedor del backend de revie
 ```
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image
 ```
-
+Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 ### despliegue del backend de store con persistencia
 
 ```
