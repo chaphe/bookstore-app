@@ -1,4 +1,4 @@
-# Despliegue de la aplicación
+# Despliegue de la manualmente
 
 
 ## creacion de la red para catalogo
@@ -12,16 +12,19 @@ docker network create library-network
 ```
 docker run --name fronted-catalog --network=library-network -d -p 81:80 frontend-catalog-image
 ```
+Frontend de Catalogo ir a [http://localhost:81](http://localhost:81) 
 
 ### despliegue del frontend de reviews
 ```
 docker run --name fronted-reviews --network=library-network  -d -p 82:80 frontend-reviews-image
 ```
+Frontend de Reviews ir a [http://localhost:82](http://localhost:82)
 
 ### despliegue del frontend de store
 ```
 docker run --name fronted-store --network=library-network -d -p 80:80 frontend-store-image
 ```
+Frontend de Store ir a [http://localhost](http://localhost)
 
 ## Despliegue de los Backends sin persistencia
 
@@ -29,12 +32,13 @@ docker run --name fronted-store --network=library-network -d -p 80:80 frontend-s
 ```
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image:simple
 ```
+Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 
 ## despliegue del contenedor backend de catalogo sin persistencia
 ```
 docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image:simple
 ```
-
+Backend de Reviews ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
 
 ## Despliegue de los Backends con persistencia
 
@@ -62,6 +66,7 @@ Una vez ejecutados los scripts podemos desplegar el contenedor del backend del c
 ```
 docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image
 ```
+Backend de Reviews ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
 
 ### despliegue del backend de reviews con persistencia
 
@@ -72,6 +77,7 @@ Para empezar hay que desplegar un contenedor con el servicio de base de datos Mo
 ```
 docker run --name=mongodb-reviews --network=library-network -d -p 27017:27017 mongo:5.0.5
 ```
+Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 
 2. Con volumen identificado
 
