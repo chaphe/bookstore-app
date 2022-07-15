@@ -1,0 +1,126 @@
+version: "3.1"
+services:
+
+  # REVIEWS
+  mongo:
+    container_name: mongodb-reviews
+    networks:
+      - library-network
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongodb-reviews-vol:/data/configdb'
+    image: 'mongo:5.0.5'
+
+  backend-reviews:
+    container_name: backend-reviews
+    networks:
+      - library-network
+    build:
+      context: persistent-microservices/backend-reviews
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+
+  frontend-reviews:
+    container_name: frontend-reviews
+    networks:
+      - library-network
+    build:
+      context: frontends/frontend-reviews
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend-reviews
+
+  # CATALOG
+
+  mysql:
+    image: 'mysql:8.0.27'
+    container_name: mysql-library
+    networks:
+      - library-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=catalog-library
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-library-vol:/var/lib/mysql
+      - ./persistent-microservices/MYSQL-catalog-library.sql:/docker-entrypoint-initdb.d/1.sql
+      - ./persistent-microservices/MYSQL_store.sql:/docker-entrypoint-initdb.d/2.sql
+
+  backend-catalog-library:
+    container_name: backend-catalog-library
+    networks:
+      - library-network
+    build:
+      context: persistent-microservices/backend-catalog-library
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mysql
+    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
+    command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=250
+      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_HOST_CONNECT_TIMEOUT=20
+
+  frontend-catalog-library:
+    container_name: frontend-catalog-library
+    networks:
+      - library-network
+    build:
+      context: frontends/frontend-catalog-library
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "81:80"
+    depends_on:
+      - backend-catalog-library
+
+  # STORE
+  backend-store-library:
+    container_name: backend-store-library
+    networks:
+      - library-network
+    build:
+      context: persistent-microservices/backend-store
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mysql
+    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
+    command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
+    environment:
+      - WAIT_HOSTS=mysql:3306
+      - WAIT_HOSTS_TIMEOUT=250
+      - WAIT_SLEEP_INTERVAL=10
+      - WAIT_HOST_CONNECT_TIMEOUT=20
+
+  frontend-store:
+    container_name: frontend-store
+    networks:
+      - library-network
+    build:
+      context: frontends/frontend-store
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "83:80"
+    depends_on:
+      - backend-store-library
+
+volumes:
+  mysql-library-vol:
+    external: false
+  mongodb-reviews-vol:
+    external: false
+networks:
+  library-network:
+    external: true

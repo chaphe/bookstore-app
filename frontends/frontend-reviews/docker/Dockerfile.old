@@ -1,0 +1,7 @@
+# Usa como base a nginx
+FROM nginx:1.21.4-alpine
+# Copia un archivo de configiración de nginx
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+# Copia el directorio dist en el directorio que usa nginx para publicar un web
+COPY /dist /usr/share/nginx/html
+ 
