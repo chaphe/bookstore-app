@@ -124,7 +124,7 @@ Para usar desplegar la aplicación usando Docker Compose se debe ejecutar en tre
 1. Desplegar las bases de datos
 
 ```
-docker-compose -f docker-compose-db.yml up
+docker-compose -f [docker-compose-db.yml](docker-compose-db.yml) up
 ```
 Una ves desplegadas las bases de datos se debe proceder a inicializarlas 
 
