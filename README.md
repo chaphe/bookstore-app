@@ -45,3 +45,9 @@ En esta fase se agrega a los microservicios de la fase 3 un microservicio shippi
 - backend-store : Backend de la tienda de libros (Springboot + MySQL)
 - frontend-store : Frontend Reviews de lectores (Angular)
 - backend-shipping : Backend de servico de entrega de los libros comprados (Node + Express)
+
+## Estructura de directorios
+
+Los frontends se encuentran en el directorio [frontends](frontends/)
+Los backends con persistencia se encuentran en el directio [persistent-microservices](persistent-microservices/) 
+Los backends sin persistencia se encuentran en el directio [simple-microservices](simple-microservices/)
