@@ -119,12 +119,18 @@ ___
 
 # Despliegue de la aplicación usando Docker Compose
 
-Para usar desplegar la aplicación usando Docker Compose se debe ejecutar en tres etapas:
+Verificar que los archivos YAML a utilizar está correctamente creados (verificar nombre de las imagenes)
+
+[docker-compose-db.yml](docker-compose-db.yml)
+[docker-compose-backends.yml](docker-compose-backends.yml)
+[docker-compose-frontends.yml](docker-compose-frontends.yml)
+
+Para usar desplegar la aplicación usando Docker Compose se deben ejecutar tres etapas:
 
 1. Desplegar las bases de datos
 
 ```
-docker-compose -f [docker-compose-db.yml](docker-compose-db.yml) up
+docker-compose -f docker-compose-db.yml up
 ```
 Una ves desplegadas las bases de datos se debe proceder a inicializarlas 
 
