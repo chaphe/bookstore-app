@@ -1,11 +1,11 @@
 # Despliegue de la manualmente
 
 
-## creacion de la red para catalogo
+## Creación de la red para la aplicación
 ```
 docker network create library-network
 ```
-
+___
 ## Despliegue de los Frontends
 
 ### despliegue del frontend de catalogo
