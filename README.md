@@ -1,6 +1,6 @@
 # Book Store App - Aplicación Basada en Microservicios
 
-Esta aplicación pretende servir como herramienta de aprendizaje de temas como microservicios, despliegue basado en contenedores (Docker) y orquestación de contenedores (Kubernetes).
+Esta aplicación de "Libreria Virtual" pretende servir como herramienta de aprendizaje de temas como microservicios, despliegue basado en contenedores (Docker) y orquestación de contenedores (Kubernetes).
 
 En el siguiente diagrama se presenta la arquitectura general de la aplicación:
 
@@ -8,7 +8,7 @@ En el siguiente diagrama se presenta la arquitectura general de la aplicación:
 
 ## Descripción
 
-Este proyecto busca proveer un ambiente de aprendizaje para la utilización de docker como herramienta de despliegue de aplicaciones. El proyecto trata de una libreria virtual y está dividido en 4 fases:
+El proyecto está construido en 4 fases, como se presenta a continuación:
 
 ### Fase 1:
 Consta de 2 microservicios y 2 frontends 
@@ -18,7 +18,7 @@ Consta de 2 microservicios y 2 frontends
 - frontend-catalog-library : Frontend Catalogo de libros (React)
 - frontend-reviews : Frontend Reviews de lectores (Angular)
 
-En esta fase los microservicios no tienen persistencia, los datos son almacenados en memoria
+En esta fase los microservicios no tienen persistencia, los datos son almacenados en memoria RAM
 
 ### Fase 2:
 Esta fase es similar a la anterior con la diferencia que los microservicios tiene persistencia
@@ -28,7 +28,7 @@ Esta fase es similar a la anterior con la diferencia que los microservicios tien
 - frontend-reviews : Frontend Reviews de lectores (Angular)
 
 ### Fase 3:
-En esta fase se agrega a los microservicios de la fase 2 un microservicio store y su respectivo frontend
+En esta fase se agrega a los microservicios de la fase 2 un microservicio store (la tienda) y su respectivo frontend
 - backend-library-catalog : Backend Catalogo de libros (Springboot + MySQL)
 - backend-reviews : Backend Reviews de lectores (Node + Express + MongoDB)
 - frontend-catalog-library : Frontend Catalogo de libros (React)
@@ -37,7 +37,7 @@ En esta fase se agrega a los microservicios de la fase 2 un microservicio store 
 - frontend-store : Frontend Reviews de lectores (Angular)
 
 ### Fase 4:
-En esta fase se agrega a los microservicios de la fase 3 un microservicio shipping que se integraraá mediente un middleeare de mensajeria
+En esta fase se agrega a los microservicios de la fase 3 un microservicio shipping (entrega) que se integrará mediente un middleware de mensajeria
 - backend-library-catalog : Backend Catalogo de libros (Springboot + MySQL)
 - backend-reviews : Backend Reviews de lectores (Node + Express + MongoDB)
 - frontend-catalog-library : Frontend Catalogo de libros (React)
