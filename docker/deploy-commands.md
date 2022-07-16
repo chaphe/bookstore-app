@@ -28,17 +28,17 @@ Frontend de Store ir a [http://localhost](http://localhost)
 
 ## Despliegue de los Backends sin persistencia
 
-## despliegue del contenedor backend de reviews
+## Despliegue del contenedor backend de Reviews
 ```
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image:simple
 ```
 Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 
-## despliegue del contenedor backend de catalogo sin persistencia
+## despliegue del contenedor backend de Catalogo sin persistencia
 ```
 docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image:simple
 ```
-Backend de Reviews ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
+Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
 
 ## Despliegue de los Backends con persistencia
 
@@ -66,9 +66,9 @@ Una vez ejecutados los scripts podemos desplegar el contenedor del backend del c
 ```
 docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image
 ```
-Backend de Reviews ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
+Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
 
-### despliegue del backend de reviews con persistencia
+### Despliegue del backend de reviews con persistencia
 
 Para empezar hay que desplegar un contenedor con el servicio de base de datos MongoDB, para esto tenemos 2 opciones:
 
