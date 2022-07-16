@@ -1,21 +1,22 @@
-- [Despliegue de la manualmente](#despliegue-de-la-manualmente)
+- [Despliegue de la aplicación manualmente usando Docker](#despliegue-de-la-aplicación-manualmente-usando-docker)
   - [Creación de la red para la aplicación](#creación-de-la-red-para-la-aplicación)
   - [Despliegue de los Frontends](#despliegue-de-los-frontends)
-    - [despliegue del frontend de catalogo](#despliegue-del-frontend-de-catalogo)
-    - [despliegue del frontend de reviews](#despliegue-del-frontend-de-reviews)
-    - [despliegue del frontend de store](#despliegue-del-frontend-de-store)
-  - [Despliegue de los Backends sin persistencia](#despliegue-de-los-backends-sin-persistencia)
-  - [Despliegue del contenedor backend de Reviews](#despliegue-del-contenedor-backend-de-reviews)
-  - [despliegue del contenedor backend de Catalogo sin persistencia](#despliegue-del-contenedor-backend-de-catalogo-sin-persistencia)
+    - [Frontend de Catalogo](#frontend-de-catalogo)
+    - [Frontend de Reviews](#frontend-de-reviews)
+    - [Frontend de Store](#frontend-de-store)
+  - [Despliegue de los Backends sin Persistencia](#despliegue-de-los-backends-sin-persistencia)
+    - [Backend de Reviews](#backend-de-reviews)
+    - [Backend de Catalogo](#backend-de-catalogo)
   - [Despliegue de los Backends con persistencia](#despliegue-de-los-backends-con-persistencia)
-    - [despliegue del backend de catalogo con persistencia](#despliegue-del-backend-de-catalogo-con-persistencia)
-    - [Despliegue del backend de reviews con persistencia](#despliegue-del-backend-de-reviews-con-persistencia)
-    - [despliegue del backend de store con persistencia](#despliegue-del-backend-de-store-con-persistencia)
+    - [Backend de Catalogo](#backend-de-catalogo-1)
+    - [Backend de Reviews](#backend-de-reviews-1)
+    - [Backend de store con persistencia](#backend-de-store-con-persistencia)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-# Despliegue de la manualmente
+# Despliegue de la aplicación manualmente usando Docker
 
+Para desplegar la aplicación es necesario primero crear las imagenes Docker de los diferentes Frontends y Backends. Para crear las imagenes se puede revisar el siguiente [documento](create-images.md) 
 
 ## Creación de la red para la aplicación
 ```
@@ -24,33 +25,33 @@ docker network create library-network
 ___
 ## Despliegue de los Frontends
 
-### despliegue del frontend de catalogo
+### Frontend de Catalogo
 ```
 docker run --name fronted-catalog --network=library-network -d -p 81:80 frontend-catalog-image
 ```
 Frontend de Catalogo ir a [http://localhost:81](http://localhost:81) 
 
-### despliegue del frontend de reviews
+### Frontend de Reviews
 ```
 docker run --name fronted-reviews --network=library-network  -d -p 82:80 frontend-reviews-image
 ```
 Frontend de Reviews ir a [http://localhost:82](http://localhost:82)
 
-### despliegue del frontend de store
+### Frontend de Store
 ```
 docker run --name fronted-store --network=library-network -d -p 80:80 frontend-store-image
 ```
 Frontend de Store ir a [http://localhost](http://localhost)
 
-## Despliegue de los Backends sin persistencia
+## Despliegue de los Backends sin Persistencia
 
-## Despliegue del contenedor backend de Reviews
+### Backend de Reviews
 ```
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image:simple
 ```
 Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 
-## despliegue del contenedor backend de Catalogo sin persistencia
+### Backend de Catalogo
 ```
 docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image:simple
 ```
@@ -59,7 +60,7 @@ Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:
 ## Despliegue de los Backends con persistencia
 
 
-### despliegue del backend de catalogo con persistencia
+### Backend de Catalogo
 
 Para empezar hay que desplegar un contenedor con el servicio de base de datos MySQL, para esto tenemos 2 opciones:
 
@@ -84,7 +85,7 @@ docker run --name backend-catalog --network=library-network -d -p 8081:8081 back
 ```
 Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
 
-### Despliegue del backend de reviews con persistencia
+### Backend de Reviews
 
 Para empezar hay que desplegar un contenedor con el servicio de base de datos MongoDB, para esto tenemos 2 opciones:
 
@@ -109,7 +110,7 @@ Una vez ejecutado el script podemos desplegar el contenedor del backend de revie
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image
 ```
 Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
-### despliegue del backend de store con persistencia
+### Backend de store con persistencia
 
 ```
 docker run --name backend-store --network=library-network -d -p 8082:8082 backend-store-image
