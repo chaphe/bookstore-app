@@ -1,4 +1,9 @@
 # Book Store App - Aplicación Basada en Microservicios
+
+Esta aplicación pretende servir como herramienta de aprendizaje de temas como microservicios, despliegue basado en contenedores (Docker) y orquestación de contenedores (Kubernetes).
+
+En el siguiente diagrama se presenta la arquitectura general de la aplicación:
+
 ![](Diagrama.png)
 
 ## Descripción
