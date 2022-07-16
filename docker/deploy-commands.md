@@ -11,7 +11,7 @@
     - [Backend de Catalogo](#backend-de-catalogo-1)
     - [Backend de Reviews](#backend-de-reviews-1)
     - [Backend de Store](#backend-de-store)
-- [Despliegue de la aplicación manualmente usando Docker Compose](#despliegue-de-la-aplicación-manualmente-usando-docker-compose)
+- [Despliegue de la aplicación usando Docker Compose](#despliegue-de-la-aplicación-usando-docker-compose)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -117,7 +117,7 @@ docker run --name backend-store --network=library-network -d -p 8082:8082 backen
 ```
 ___
 
-# Despliegue de la aplicación manualmente usando Docker Compose
+# Despliegue de la aplicación usando Docker Compose
 
 Para usar desplegar la aplicación usando Docker Compose se debe ejecutar en tres etapas:
 
