@@ -10,7 +10,8 @@
   - [Despliegue de los Backends con persistencia](#despliegue-de-los-backends-con-persistencia)
     - [Backend de Catalogo](#backend-de-catalogo-1)
     - [Backend de Reviews](#backend-de-reviews-1)
-    - [Backend de store con persistencia](#backend-de-store-con-persistencia)
+    - [Backend de Store](#backend-de-store)
+- [Despliegue de la aplicación manualmente usando Docker Compose](#despliegue-de-la-aplicación-manualmente-usando-docker-compose)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -22,7 +23,6 @@ Para desplegar la aplicación es necesario primero crear las imagenes Docker de 
 ```
 docker network create library-network
 ```
-___
 ## Despliegue de los Frontends
 
 ### Frontend de Catalogo
@@ -76,7 +76,7 @@ docker run --name mysql-library --network=library-network -e MYSQL_ROOT_PASSWORD
 docker run --name mysql-library --network=library-network -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d -v mysql-library-vol:/var/lib/mysql mysql:8.0.27
 ```
 
-Después de desplegar el contenedor mysql es necesario correr los scripts MYSQL-catalog-library.sql y MYSQL-store.sql para crear y poblar la base de datos. Para esto se recomienda usar un cliente como HeidiSQL (user=root, password=password).
+Después de desplegar el contenedor mysql es necesario correr los scripts catalog-script.sql y store-script.sql para crear y poblar la base de datos. Para esto se recomienda usar un cliente como HeidiSQL (user=root, password=password).
 
 Una vez ejecutados los scripts podemos desplegar el contenedor del backend del catalogo
 
@@ -110,8 +110,36 @@ Una vez ejecutado el script podemos desplegar el contenedor del backend de revie
 docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image
 ```
 Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
-### Backend de store con persistencia
+### Backend de Store
 
 ```
 docker run --name backend-store --network=library-network -d -p 8082:8082 backend-store-image
+```
+___
+
+# Despliegue de la aplicación manualmente usando Docker Compose
+
+Para usar desplegar la aplicación usando Docker Compose se debe ejecutar en tres etapas:
+
+1. Desplegar las bases de datos
+
+```
+docker-compose -f docker-compose-db.yml up
+```
+Una ves desplegadas las bases de datos se debe proceder a inicializarlas 
+
+Después de desplegar el contenedor mysql es necesario correr los scripts catalog-script.sql y store-script.sql para crear y poblar la base de datos. Para esto se recomienda usar un cliente como HeidiSQL (user=root, password=password).
+
+Después de desplegar el contenedor MongoDB es necesario correr ```node Initialmongodb.js``` para crear y poblar la base de datos de MongoDB
+
+2. Desplegar los Backends
+
+```
+docker-compose -f docker-compose-backends.yml up
+```
+
+3. Desplegar los Frontends
+
+```
+docker-compose -f docker-compose-backends.yml up
 ```
