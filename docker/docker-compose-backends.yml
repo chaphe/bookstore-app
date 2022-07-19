@@ -20,19 +20,9 @@ services:
       - "8081:8081"
     networks:
       - book-store-network
-    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
-    #command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
     environment:
-      - WAIT_HOSTS=mysql:3306
-      - WAIT_HOSTS_TIMEOUT=250
-      - WAIT_SLEEP_INTERVAL=10
-      - WAIT_HOST_CONNECT_TIMEOUT=20
       - MYSQL_DB_HOST=mysql-library
       - MYSQL_DB_PORT=3306
-      #- MYSQL_DB_USERNAME=doadmin
-      #- MYSQL_DB_PASSWORD=AVNS_NB-w6meWYgRCN1H
-      #- MYSQL_DB_HOST=mysql-library
-      #- MYSQL_DB_PORT=3306
       - MYSQL_DB_USERNAME=root
       - MYSQL_DB_PASSWORD=password
 
@@ -45,13 +35,7 @@ services:
       - "8082:8082"
     networks:
       - book-store-network
-    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
-    #command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
     environment:
-      - WAIT_HOSTS=mysql:3306
-      - WAIT_HOSTS_TIMEOUT=250
-      - WAIT_SLEEP_INTERVAL=10
-      - WAIT_HOST_CONNECT_TIMEOUT=20
       - MYSQL_DB_HOST=mysql-library
       - MYSQL_DB_PORT=3306
       - MYSQL_DB_USERNAME=root
