@@ -147,5 +147,5 @@ docker-compose -f docker-compose-backends.yml up
 3. Desplegar los Frontends
 
 ```
-docker-compose -f docker-compose-backends.yml up
+docker-compose -f docker-compose-frontends.yml up
 ```
