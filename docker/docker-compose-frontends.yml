@@ -28,9 +28,9 @@ services:
     container_name: frontend-store
     image: 'chaphe/frontend-store-image:1.0'
     environment:
-      - STORE_URL=http://137.184.238.11:8082
-      - REVIEWS_URL=http://137.184.238.11:3000
-      - CATALOG_URL=http://137.184.238.11:8081
+      - STORE_URL=http://localhost:8082
+      - REVIEWS_URL=http://localhost:3000
+      - CATALOG_URL=http://localhost:8081
     ports:
       - "80:80"
     networks:
