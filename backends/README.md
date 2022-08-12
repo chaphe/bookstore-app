@@ -3,6 +3,7 @@
 ## Backend de Reseñas (Reviews Backend) 
 
 Este servicio brinda información de las reseñas que han hecho los lectores a diferentes libros. Está desarrollado usando NodeJS + Express y la versión persistente con MongoDB.  
+
 EL API es el siguiente:
 
 **GET /reviews**  
@@ -27,6 +28,21 @@ Los siguientes parametros es necesario : isbn
 
 Este servicio brinda información de los libros existentes en el inventario de la liberia. Está desarrollado usando Spring y la versión persistente con base de datos MySQL.  
 
+El API es el siguiente:
+
+**GET /api/getlibros**  
+Retorna la lista de los libros existentes en el catalogo (inventario) en formato JSON
+```
+[{"titulo":"The Ultimate Beginners Guide to Learn Docker Step-By-Step","autor":"Mark Reed","descripcion":"Libro para aprender docker","valor":"8","unidades":12,"isbn":"0321299999"},{"titulo":"Se tu propio jefe en 12 meses","autor":"Melinda Emerson","descripcion":"¿Cuántas veces has soñado con abrir tu empresa y ser tu propio jefe? ","valor":"0.5","unidades":900,"isbn":"03213128888"},{"titulo":"El arte de la programacion: introduccion a la informática.","autor":"Leonel Parra","descripcion":"Introduccion a la informatica mediante la progamacion en C++","valor":"15","unidades":50,"isbn":"10010090321"}]
+```
+
+**POST /api/agregarlibro**
+Agrega un nuevo libro al catalogo.  
+Los siguientes parametros son necesarios : titulo, isbn, autor, descricpcion, valor, unidades
+
+**DELETE /api/deletelibro**  
+ Elimina un libro del catalogo.  
+Los siguientes parametros son necesarios: isbn
 
 ## Backend de Tienda (Store Backend)
 
