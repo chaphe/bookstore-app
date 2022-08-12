@@ -49,5 +49,5 @@ En esta fase se agrega a los microservicios de la fase 3 un microservicio shippi
 ## Estructura de directorios
 
 - Los frontends se encuentran en el directorio [frontends](frontends/)
-- Los backends con persistencia se encuentran en el directio [persistent-microservices](persistent-microservices/) 
-- Los backends sin persistencia se encuentran en el directio [simple-microservices](simple-microservices/)
+- Los backends con persistencia se encuentran en el directio [backends](backends/), la versión simple (en memoria) en  [backends/in-memory](backends/in-memory) y la versión persistente en  [backends/persistent](backends/persistent)
+
