@@ -51,6 +51,8 @@ Los siguientes parametros son necesarios: isbn
 Este servico se encarga de proveer la logica de una librería virtual. Está desarrollado usando Spring y utiliza para la persistencia la base de datos MySQL y para comunicar con el servicio de Entregas (Shipping) el broker de mensajeria RabbitMQ.
 
 
+
+
 ## Backend de Entregas (Shipping Backend)
 
 Este servicio se encarga de proveer la información de gestión de la entrega de productos. Es una implementación simple que solo "imprime" esta información en consola. Se comunicar con el servicio de Tienda (Store) el broker de mensajeria RabbitMQ.
