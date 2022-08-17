@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: catalog-backend-deployment
+  namespace: library-ns  
+  labels:
+    app: catalog-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: catalog-backend
+  template:
+    metadata:
+      labels:
+        app: catalog-backend
+    spec:
+      containers:
+      - name: catalog-backend
+        image: chaphe/backend-catalog-image:1.0
+        ports:
+        - containerPort: 8081
+        env:
+        - name: MYSQL_DB_HOST
+          value: mysql-catalog-service
+        - name: MYSQL_DB_PORT
+          value: "3306"
+        - name: MYSQL_DB_USERNAME
+          value: root
+        - name: MYSQL_DB_PASSWORD
+          value: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-backend-service
+  namespace: library-ns  
+spec:
+  type: NodePort
+  selector:
+    app: catalog-backend
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30300
