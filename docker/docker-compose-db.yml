@@ -4,10 +4,13 @@ services:
 
   mongodb-reviews:
     container_name: mongodb-reviews
+    environment:
+      - MONGO_INITDB_DATABASE=test
     ports:
       - '27017:27017'
     volumes:
-      - 'mongodb-reviews-vol:/data/db'
+      - mongodb-reviews-vol:/data/db
+      - ../backends/persistent/:/docker-entrypoint-initdb.d
     image: 'mongo:5.0.5'
     networks:
       - book-store-network
@@ -23,6 +26,7 @@ services:
       - '3306:3306'
     volumes:
       - mysql-library-vol:/var/lib/mysql
+      - ../backends/persistent/:/docker-entrypoint-initdb.d
     networks:
       - book-store-network
 
