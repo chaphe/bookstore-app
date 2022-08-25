@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mysql-catalog-deployment
-  namespace: library-ns
   labels:
     app: mongo
 spec:
@@ -29,8 +28,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-catalog-service
-  namespace: library-ns  
+  name: mysql-catalog-service  
 spec:
   type: ClusterIP
   selector:
@@ -44,8 +42,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mysql-catalog-ext-service
-  namespace: library-ns    
+  name: mysql-catalog-ext-service    
 spec:
   type: NodePort
   selector:

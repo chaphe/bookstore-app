@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reviews-backend-deployment 
+  name: reviews-backend-deployment
+  namespace: library-ns  
   labels:
     app: reviews-backend
 spec:
@@ -26,7 +27,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reviews-frontend-deployment 
+  name: reviews-frontend-deployment
+  namespace: library-ns  
   labels:
     app: reviews-frontend
 spec:
@@ -51,7 +53,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: reviews-backend-service 
+  name: reviews-backend-service
+  namespace: library-ns  
 spec:
   type: NodePort
   selector:
@@ -66,6 +69,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: reviews-frontend-service
+  namespace: library-ns  
 spec:
   type: NodePort
   selector:
