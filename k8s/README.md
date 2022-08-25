@@ -12,4 +12,6 @@ Se pueden crear servicios de tipo NodePort para inicializar las BD o hacer un po
 ```
 kubectl port-forward -n library-ns service/mysql-catalog-service 13306:3306
 ```
+## Despliegue de la app reviews
 
+Antes de desplegar el archivo reviews.yaml cambiar la propiedad **REVIEWS_URL** en el deployment *reviews-frontend-deployment* 
