@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reviews-backend-deployment 
+  labels:
+    app: reviews-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reviews-backend
+  template:
+    metadata:
+      labels:
+        app: reviews-backend
+    spec:
+      containers:
+      - name: reviews-backend
+        image: chaphe/backend-reviews-image:1.0
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGODB_HOST
+          value: mongo-reviews-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: reviews-backend-service 
+spec:
+  type: NodePort
+  selector:
+    app: reviews-backend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30200
