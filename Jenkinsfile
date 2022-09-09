@@ -27,14 +27,14 @@ pipeline {
       }
       steps {
         // Backend Catalog
-        dir ('simple-microservices/backend-catalog/') {
+        dir ('backends/in-memory/backend-catalog/') {
           sh 'mvn -Dmaven.test.failure.ignore=true install'
           sh 'docker build -t backend-catalog-image:simple -f docker/Dockerfile .'
           
         }
 
         //Backend Reviews
-        dir ('simple-microservices/backend-reviews/') {
+        dir ('backends/in-memory/backend-reviews/') {
           sh 'docker build -t backend-reviews-image:simple -f docker/Dockerfile .'
         }
 
@@ -49,24 +49,24 @@ pipeline {
       }
       steps {
         // Backend Catalog
-        dir ('persistent-microservices/backend-catalog/') {
+        dir ('backends/persistent/backend-catalog/') {
           sh 'mvn -Dmaven.test.failure.ignore=true install'
           sh 'docker build -t backend-catalog-image -f docker/Dockerfile .'
           
         }
         //Backend Store
-        dir ('persistent-microservices/backend-store/') {
+        dir ('backends/persistent/backend-store/') {
           sh 'mvn -Dmaven.test.failure.ignore=true install'
           sh 'docker build -t backend-store-image -f docker/Dockerfile .'
         }      
 
         //Backend Reviews
-        dir ('persistent-microservices/backend-reviews/') {
+        dir ('backends/persistent/backend-reviews/') {
           sh 'docker build -t backend-reviews-image -f docker/Dockerfile .'
         }
 
         //Backend Reviews
-        dir ('persistent-microservices/backend-shipping/') {
+        dir ('backends/persistent/backend-shipping/') {
           sh 'docker build -t backend-shipping-image -f docker/Dockerfile .'
         }
 
