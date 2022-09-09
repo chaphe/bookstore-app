@@ -50,12 +50,28 @@ Los siguientes parametros son necesarios: isbn
 
 Este servico se encarga de proveer la logica de una librería virtual. Está desarrollado usando Spring y utiliza para la persistencia la base de datos MySQL y para comunicar con el servicio de Entregas (Shipping) el broker de mensajeria RabbitMQ.
 
+**GET /api/getcart**  
+Retorna la lista de items que hay en el carrito de compras en formato JSON
+Los siguientes parametros son necesarios : usuario
+```
+[{"id":"4","usuario":"student","isbn":"10010090321","cantidad":1},{"id":"5","usuario":"student","isbn":"03213128888","cantidad":1}]
+```
 
+**POST /api/addcart**  
+Agrega un libro al carrito de compras
+Los siguientes parametros son necesarios : usuario, isbn, cantidad
 
+**DELETE /api/delete**  
+Elimina un libro del carrito de compras
+Los siguientes parametros son necesarios : usuario, isbn
+
+**POST /api/buycart**  
+Este metodo realiza la compra de los libros y envia a través de RabbitMQ un mensaje al microservicio de Entrega (Shipping), luego el carrito de compras es vaciado.
+Los siguientes parametros son necesarios : usuario
 
 ## Backend de Entregas (Shipping Backend)
 
-Este servicio se encarga de proveer la información de gestión de la entrega de productos. Es una implementación simple que solo "imprime" esta información en consola. Se comunicar con el servicio de Tienda (Store) el broker de mensajeria RabbitMQ.
+Este servicio se encarga de proveer la información de gestión de la entrega de productos. Es una implementación simple que solo "imprime" la información de la compra en la consola. Para comunicarse con el servicio de Tienda (Store) usa broker de mensajeria RabbitMQ.
 
 
 
