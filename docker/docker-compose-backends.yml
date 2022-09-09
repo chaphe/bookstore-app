@@ -3,7 +3,6 @@ version: "3.2"
 services:
 
   backend-reviews:
-    container_name: backend-reviews
     image: 'chaphe/backend-reviews-image:1.0'
     environment:
       - MONGODB_HOST=mongodb-reviews
@@ -14,14 +13,13 @@ services:
 
   # CATALOG
   backend-catalog:
-    container_name: backend-catalog
     image: 'chaphe/backend-catalog-image:1.0'
     ports:
       - "8081:8081"
     networks:
       - book-store-network
     environment:
-      - MYSQL_DB_HOST=mysql-library
+      - MYSQL_DB_HOST=mysql-catalog-store
       - MYSQL_DB_PORT=3306
       - MYSQL_DB_USERNAME=root
       - MYSQL_DB_PASSWORD=password
@@ -29,14 +27,13 @@ services:
   # STORE
 
   backend-store:
-    container_name: backend-store
     image: 'chaphe/backend-store-image:1.0'
     ports:
       - "8082:8082"
     networks:
       - book-store-network
     environment:
-      - MYSQL_DB_HOST=mysql-library
+      - MYSQL_DB_HOST=mysql-catalog-store
       - MYSQL_DB_PORT=3306
       - MYSQL_DB_USERNAME=root
       - MYSQL_DB_PASSWORD=password
@@ -45,7 +42,6 @@ services:
 
   # Shipping Service
   backend-shipping:
-    container_name: backend-shipping
     image: 'chaphe/backend-shipping-image:1.0'
     ports:
       - "3001:3000"  

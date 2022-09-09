@@ -1,13 +1,8 @@
 version: "3.2"
 
 services:
-
-
-
   # Catalog
-
   frontend-catalog:
-    container_name: frontend-catalog
     image: 'chaphe/frontend-catalog-image:1.0'
     ports:
       - "81:80"
@@ -16,7 +11,6 @@ services:
 
   # Reviews
   frontend-reviews:
-    container_name: frontend-reviews
     image: 'chaphe/frontend-reviews-image:1.0'
     environment:
       - REVIEWS_URL=http://localhost:3000
@@ -28,7 +22,6 @@ services:
   # Store
 
   frontend-store:
-    container_name: frontend-store
     image: 'chaphe/frontend-store-image:1.0'
     environment:
       - STORE_URL=http://localhost:8082

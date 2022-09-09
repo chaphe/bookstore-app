@@ -130,7 +130,7 @@ Para usar desplegar la aplicación usando Docker Compose se deben ejecutar tres 
 1. Desplegar las bases de datos
 
 ```
-docker-compose -f docker-compose-db.yml up
+docker compose -f docker-compose-db.yml -p library up
 ```
 Una ves desplegadas las bases de datos se debe proceder a inicializarlas 
 
@@ -141,11 +141,11 @@ Después de desplegar el contenedor MongoDB es necesario correr ```node Initialm
 2. Desplegar los Backends
 
 ```
-docker-compose -f docker-compose-backends.yml up
+docker compose -f docker-compose-backends.yml -p library up
 ```
 
 3. Desplegar los Frontends
 
 ```
-docker-compose -f docker-compose-frontends.yml up
+docker compose -f docker-compose-frontends.yml -p library up
 ```

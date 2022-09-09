@@ -3,7 +3,6 @@ version: "3.2"
 services:
 
   mongodb-reviews:
-    container_name: mongodb-reviews
     environment:
       - MONGO_INITDB_DATABASE=test
     ports:
@@ -16,9 +15,8 @@ services:
       - book-store-network
 
   # CATALOG
-  mysql:
+  mysql-catalog-store:
     image: 'mysql:8.0.27'
-    container_name: mysql-library
     environment:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_DATABASE=catalog-library
@@ -32,7 +30,6 @@ services:
 
 
   rabbitmq:
-    container_name: 'rabbitmq'
     image: rabbitmq:3.9.13-management
     ports:
         - 5672:5672
