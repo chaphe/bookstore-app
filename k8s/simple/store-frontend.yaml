@@ -21,11 +21,11 @@ spec:
         - containerPort: 80
         env:
         - name: REVIEWS_URL
-          value: http://172.18.7.169:30200
+          value: http://172.31.95.117:30200
         - name: STORE_URL
-          value: http://172.18.7.169:30400 
+          value: http://172.31.95.117:30400 
         - name: CATALOG_URL
-          value: http://172.18.7.169:30300 
+          value: http://172.31.95.117:30300 
 ---
 apiVersion: v1
 kind: Service
