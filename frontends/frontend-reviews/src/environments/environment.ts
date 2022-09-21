@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   reviewsUrl:
-    window['env']['reviewsUrl'] || 'http://localhost:3000'
+    'http://localhost:3000'
 };
 
 /*
