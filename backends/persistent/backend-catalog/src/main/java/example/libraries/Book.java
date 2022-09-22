@@ -3,6 +3,7 @@ import javax.persistence.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "Book")
@@ -10,9 +11,9 @@ import lombok.Getter;
 @Getter
 public class Book {
 
-    @Id
-    @Column(name="ISBN")
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Id @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Column(name = "ISBN")
     private String ISBN;
 
     @Column(name="titulo")
@@ -29,6 +30,54 @@ public class Book {
 
     @Column(name="unidades")
     private Integer unidades;
+
+    public String getISBN() {
+        return ISBN;
+    }
+
+    public void setISBN(String ISBN) {
+        this.ISBN = ISBN;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public String getValor() {
+        return valor;
+    }
+
+    public void setValor(String valor) {
+        this.valor = valor;
+    }
+
+    public Integer getUnidades() {
+        return unidades;
+    }
+
+    public void setUnidades(Integer unidades) {
+        this.unidades = unidades;
+    }
 
     public Book(){}
 }
