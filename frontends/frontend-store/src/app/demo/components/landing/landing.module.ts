@@ -10,6 +10,7 @@ import { ButtonModule } from 'primeng/button';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { FieldsetModule } from 'primeng/fieldset';
+import { DetailsComponent } from './details.component';
 
 @NgModule({
     imports: [
@@ -24,6 +25,6 @@ import { FieldsetModule } from 'primeng/fieldset';
         FieldsetModule,
         ButtonModule
     ],
-    declarations: [LandingComponent]
+    declarations: [LandingComponent, DetailsComponent]
 })
 export class LandingModule { }

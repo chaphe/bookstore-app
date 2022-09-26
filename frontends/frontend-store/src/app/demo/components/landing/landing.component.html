@@ -20,7 +20,12 @@
                         </a>
                     </li>
                 </ul>
-                <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
+                <div class="flex justify-content-between border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
+                    <div class="p-inputgroup">
+                        <button type="button" pButton pRipple label="Ingresar" (click)="ChangeUser()"></button>
+                        <input type="text" pInputText placeholder="Usuario" [value]="usuario" [(ngModel)]="usuario"
+          (ngModelChange)="usuario = $event">
+                    </div>
                     <p-button (click)="SetState('carrito')" label="Ver Carrito" icon="pi pi-shopping-cart" styleClass="p-button-warning" badge="{{GetTotal()}}" badgeClass="p-badge-danger"></p-button>
                 </div>
             </div>
@@ -48,15 +53,23 @@
                             <hr class="my-3 mx-0 border-top-1 border-none surface-border mt-auto" />
                             <div class="text-center">
                                 <p-rating [ngModel]="GetMeanStars(item.isbn)" [readonly]="true" [cancel]="false"></p-rating>
+                                <p>({{GetMeanStars(item.isbn)}})</p>
                             </div>
                             <hr class="mb-3 mx-0 border-top-1 border-none surface-border" />
                             <button pButton pRipple (click)="onclickAddCart(item.isbn)" label="Agregar al carrito" class="p-3 mb-2 w-full "></button>
-                            <button pButton pRipple (click)="SetState('detalles')" label="Ver opiniones" class="p-3 w-full p-button-outlined"></button>
+                            <button pButton pRipple (click)="detalle(item)" label="Ver opiniones ({{CountReviews(item.isbn)}})" class="p-3 w-full p-button-outlined"></button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <app-details [isShow]="ShowDetails" [data]="detailsData" [libro]="currentLibro" (onAddCart)="onclickAddCart($event)"
+            style="width: 100%;">
+            <div class="flex justify-content-center mt-3" *ngIf="state == 'detalles'">
+                <button pButton pRipple (click)="SetState('inicio')" label="Regresar" type="button" class="mr-3 p-button-raised"></button>
+            </div>
+        </app-details>
 
             
         <div class="surface-section" *ngIf="state == 'carrito'">
@@ -78,31 +91,6 @@
                   <span *ngIf="!this.sendDataCarrito">Comprar</span>
                   <i *ngIf="this.sendDataCarrito" class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
                 </button>
-            </div>
-        </div>
-
-        <div class="card" *ngIf="state == 'detalles'">
-            <h5>Opiniones</h5>
-            <p-fieldset legend="Neider Smith" [toggleable]="true" class="line-height-3 m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat.
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                laborum.
-            </p-fieldset>
-            <p-fieldset legend="Jose Lui" [toggleable]="true" class="line-height-3 m-0">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-                dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                consequat.
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est
-                laborum.
-            </p-fieldset>
-            <div class="flex justify-content-center mt-3">
-                <button pButton pRipple (click)="SetState('inicio')" label="Regresar" type="button" class="mr-3 p-button-raised"></button>
             </div>
         </div>
 

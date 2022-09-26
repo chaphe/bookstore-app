@@ -1,0 +1,14 @@
+<div class="card" [hidden]="!isShow">
+    <h5>Opiniones</h5>
+    <div *ngFor="let item of data">
+        <p-fieldset legend="{{item.usuario}}" [toggleable]="true" class="line-height-3 m-0">
+            {{item.comentario}}
+            <div class="text-center">
+                <p-rating [ngModel]="item.estrellas" [readonly]="true" [cancel]="false"></p-rating>
+                <p>({{item.estrellas}})</p>
+            </div>
+        </p-fieldset>
+    </div>
+    <h3 *ngIf="data.length == 0">Ningun comentario</h3>
+</div>
+<ng-content></ng-content>
