@@ -52,7 +52,7 @@ export class AppComponent {
         alert("nueva reseña agregada");
       } else {
         this.lista[index] = data;
-        alert("reseña actulizada");
+        alert("reseña actualizada");
       }
 
     })

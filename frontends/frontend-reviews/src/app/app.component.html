@@ -8,13 +8,18 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  body {
+    background-color: white;
+    background-size: 100vw 100vh;
+  }
+
   h1,
   h2,
   h3,
   h4,
   h5,
   h6 {
-    margin: 8px 0;
+    margin: 0px 0;
   }
 
   p {
@@ -33,9 +38,10 @@
     height: 60px;
     display: flex;
     align-items: center;
-    background-color: #1976d2;
+    background-color: #1BBA93;
     color: white;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 20px;
   }
 
   .toolbar img {
@@ -43,24 +49,29 @@
   }
 
   .content {
-    display: flex;
-    margin: 82px auto 32px;
+    display: grid;
+    grid-template-columns: 180% 180%;
+    margin: 80px 20px;
     padding: 0 16px;
-    max-width: 960px;
-    flex-direction: column;
+    width: 350px;
+    border: 3px solid #fff;
+    padding: 20px;
     align-items: center;
+    height: 250px;
   }
 
   .card-container {
     position: relative;
-    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    margin-top: 16px;
+    margin-top: 10px;
     border: 2px solid darkgray;
-    border-radius: 5px;
-    width: 100%;
-    padding: 15px;
+    border-radius: 20px;
+    width: 70%;
+    padding: 50px;
+    height: 60%;
+    margin-bottom: 50px;
+    background: white;
   }
 
   .card-title {
@@ -72,76 +83,398 @@
   }
 
   .card-title .eliminar {
-    background-color: brown;
+    background: brown;
     color: white;
-    position: absolute;
+    position: relative;
     right: 0;
     top: -10px;
+    min-width: 30px;
+    height: 15px;
+    padding: 0px 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3 ease;
+    display: inline-block;
+    outline: none;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 2px #ac0c27ee;
+  }
+
+  .isbn {
+    position: absolute;
     left: 0;
+    top: -18;
   }
 
   .editar {
-    position: absolute;
-    bottom: 0;
-    background-color: blue;
-    color: white;
-    right: 0;
+    position: relative;
+    bottom: 5;
+    background-color: #1BBA93;
+    color: #fff;
+    min-width: 100px;
+    height: 50px;
+    padding: 5px 20px;
+    top: 25%;
+    right: -350px;
+    transition: all 0.3 ease;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 3px #31c5a0;
   }
 
   .agregar-container {
     display: flex;
     align-items: center;
     width: 100%;
-    margin-top: 25px;
-    border: 2px solid blueviolet;
-    padding: 15px;
+    margin-top: 60px;
+    padding: 18px;
     justify-content: space-around;
   }
+
+  .signup-form {
+    background-color: #eff0f1;
+    max-width: 600px;
+    flex: 1;
+    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .form-header {
+    border-bottom: 1px solid #cccccc;
+    padding: 15px 0;
+  }
+
+  .form-header h1 {
+    text-align: center;
+    font-size: 28px;
+    color: #666;
+  }
+
+  .form-body {
+    background: white;
+    padding: 5px 10px;
+  }
+
+  .row {
+    display: flex;
+  }
+
+  .input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 10px 75px;
+  }
+
+  .input-group2 {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 170px;
+  }
+
+  label {
+    color: black;
+    font-size: 17px;
+  }
+
+  input[type="text"] {
+    width: 200px;
+    font-size: 18px;
+    height: 34px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #666;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: white;
+    outline: none;
+  }
+
+  input[type="number"] {
+    width: 100px;
+    font-size: 18px;
+    height: 34px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #666;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: white;
+    outline: none;
+  }
+
+  textarea[type="text-long"] {
+    width: 625px;
+    font-size: 18px;
+    height: 100px;
+    padding-left: 10px;
+    padding-right: 10px;
+    color: #666;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: white;
+    outline: none;
+  }
+
+  
+
+  .btn {
+    padding: 10px 30px;
+    background-color: #1BBA93;
+    font-size: 17px;
+    height: 40px;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    margin: 5px 850px;
+  }
+
+  .input-icon {
+    color: #191919;
+    position: relative;
+    width: 20px;
+    height: 20px;
+    margin: 0px 10px;
+  }
+
+  .testimonios-contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .testimonios-caja {
+    width: 500px;
+    box-shadow: 2px 2px 30px rgba(0,0,0.1);
+    background-color: white;
+    padding: 20px;
+    margin: 15px;
+    cursor: pointer;
+  }
+
+  .perfil-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 30px;
+  }
+
+  .perfil-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: center;
+  }
+
+
+  .perfil {
+    display: flex;
+    align-items: center;
+  }
+
+  .name-user {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .name-user strong {
+    color: #3d3d3d;
+    font-size: 1.3rem;
+  }
+
+  .name-user span {
+    color: #979797;
+    font-size: 1.1rem;
+  }
+
+  .reseñas {
+    color: #f9d71c;
+  }
+
+  .caja-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .comentarios {
+    color: #3d3d3d;
+    font-size: 1.3rem;
+  }
+
+  .modal {
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    transition: all 500ms ease;
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  #btn-modal:checked ~ .modal {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .contenedor {
+    width: 80%;
+    height: 60%;
+    margin: auto;
+    background: #fff;
+    box-shadow: 1px 7px 25px rgba(0,0,0,0.16);
+    transition: all 500ms ease;
+    position: relative;
+    transform: translateY(-30%);
+  }
+
+  #btn-modal:checked ~ .modal .contenedor{
+    transform: translateY(0%);
+  }
+
+  .contenedor header {
+    padding: 10px;
+    background: #1BBA93;
+    color: #fff;
+  }
+
+
+  #btn-modal {
+    display: none;
+  }
+
+  .lbl-modal {
+    padding: 10px 30px;
+    background-color: rgb(22, 168, 120);
+    font-size: 17px;
+    height: 17px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    margin-right: 20px;
+  }
+
+  .lbl-modal2 {
+    padding: 5px 10px;
+    background-color: brown;;
+    font-size: 17px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    margin-left: 90%;
+  }
+
+
 </style>
 
 <!-- Toolbar -->
-<div class="toolbar" role="banner">
-  <img width="40" alt="Angular Logo"
-    src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==" />
-  <span>Reseñas</span>
-  <div class="spacer"></div>
-</div>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <title>Reseñas</title>
+  </head>
+  <body>
 
-<div class="content" role="main">
-  <div *ngFor="let item of lista" class="card-container">
-    <div class="card-title">
-      <h3>{{item.usuario}}</h3>
-      <h4>{{item.isbn}}</h4>
-      <div>
-        <img [src]="'./assets/estrellas'+item.estrellas+'.png'" style="height: 50px;" />
+    <div class="toolbar" role="banner">
+        <img width="40" alt="IconoReseñas" [src]="'./assets/resenas.png'"/>
+        <span>Reseñas</span>
+      <div class="spacer"></div>
+      <label for="btn-modal" class="lbl-modal">Registrar</label>
+    </div>
+
+    <div class="content" role="main">
+      <div *ngFor="let item of lista" class="card-container">
+        <div class="card-title">
+          <div class="caja-top">
+            <div class="perfil-img">
+              <img [src]="'./assets/usuario (3).png'"/>
+            </div>
+            <div class="name-user">
+              <strong>{{item.usuario}}</strong>
+              <span>Isbn: {{item.isbn}}</span>
+            </div>
+          </div>
+          <div>
+            <img [src]="'./assets/estrellas'+item.estrellas+'.png'" style="height: 50px;" />
+          </div>
+          <button class="eliminar" (click)="deleteitem(item)">X</button>
+        </div>
+        <div class="comentarios">
+          <p> {{item.comentario}} </p>
+        </div>
+        <label for="btn-modal" class="editar" (click)="editar(item)">Editar</label>
       </div>
-      <button class="eliminar" (click)="deleteitem(item)">X</button>
     </div>
-    <div>
-      {{item.comentario}}
-    </div>
-    <button class="editar" (click)="editar(item)">Editar</button>
-  </div>
-  <div class="agregar-container">
-    <label for="usuario">usuario</label>
-    <input id="usuario" #isbnbyid name="usuario" type="text" [(ngModel)]="usuario" (ngModelChange)="usuario = $event">
 
-    <label for="isbn">isbn</label>
-    <input id="isbn" #isbnbyid name="isbn" type="text" [(ngModel)]="isbn" (ngModelChange)="isbn = $event">
-
-    <label for="estrellas">estrellas</label>
-    <input type="number" max="5" min="0" [(ngModel)]="stars" (ngModelChange)="stars = $event">
-
-    <label for="comentario">comentario</label>
-    <input type="text" [(ngModel)]="comentario" (ngModelChange)="comentario = $event">
-
-    <button (click)="sendreview()">Enviar</button>
-  </div>
-
-</div>
-
-
-
-
-
-<router-outlet></router-outlet>
+    
+    <div class="agregar-container">
+      <input type="checkbox" id="btn-modal"> 
+      <div class="modal">
+        <div class="contenedor">
+          <header>
+            Reseñas
+            <label for="btn-modal" class="lbl-modal2">X</label>
+          </header>
+          <div class="contenido">
+            <div class="singnup-form"> 
+              <div class="form-header">
+                <div class="row">
+                  <div class="input-group">
+                    <div>
+                      <img [src]="'./assets/usuario (4).png'" class="input-icon" />
+                      <label for="usuario" class="label">Usuario</label>
+                    </div>
+                    <input id="usuario" #isbnbyid name="usuario" type="text" [(ngModel)]="usuario" (ngModelChange)="usuario = $event">
+                  </div>
+                  <div class="input-group">
+                    <div>
+                      <img [src]="'./assets/codigo-qr.png'" class="input-icon" />
+                      <label for="isbn" class="label">Isbn</label>
+                    </div>
+                    <input id="isbn" #isbnbyid name="isbn" type="text" [(ngModel)]="isbn" (ngModelChange)="isbn = $event">
+                  </div>
+                  <div class="input-group">
+                    <div>
+                      <img [src]="'./assets/cinco-estrellas.png'" class="input-icon" />
+                      <label for="estrellas" class="label">Estrellas</label>
+                    </div>
+                    <input type="number" max="5" min="0" [(ngModel)]="stars" (ngModelChange)="stars = $event">
+                  </div>
+                </div>
+                <div class="input-group2">
+                  <div>
+                    <img [src]="'./assets/comentario-positivo.png'" class="input-icon" />
+                    <label for="comentario" class="label">Comentario</label>
+                  </div>
+                  <textarea type="text-long" [(ngModel)]="comentario" (ngModelChange)="comentario = $event"> </textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          <label for="btn-modal" (click)="sendreview()" class="btn">Enviar</label>
+          </div>
+        </div>
+      </div>
+    <router-outlet></router-outlet>
+      
+    
+  
+  </body>
+</html>
