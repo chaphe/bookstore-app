@@ -22,7 +22,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React from "react";
 import axios from "axios";
-
 const host = process.env.REACT_APP_CATALOG_URL;
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -58,7 +57,7 @@ export default function Main() {
   const [libros, setLibros] = React.useState<Libro[]>([]);
 
   const getLibros = async () => {
-    const response = await fetch(host+"/getlibros");
+    const response = await fetch(host + "/getlibros");
     const data = await response.json();
     setLibros(data);
   };
@@ -179,60 +178,67 @@ export default function Main() {
               <TextField
                 autoFocus
                 margin="dense"
+                id="isbn"
+                label="Isbn"
+                type="text"
+                fullWidth
+                variant="standard"
+                onChange={(e: { target: { value: any; }; }) =>
+                  setLibroNuevo({ ...libroNuevo, isbn: e.target.value })
+                }
+              />
+              <TextField
+                margin="dense"
                 id="titulo"
                 label="Titulo"
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, titulo: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="autor"
                 label="Autor"
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, autor: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="descripcion"
                 label="Descripcion"
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, descripcion: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="valor"
                 label="Valor"
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, valor: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="unidades"
                 label="Unidades"
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: string; }; }) =>
                   setLibroNuevo({
                     ...libroNuevo,
                     unidades: parseInt(e.target.value),
@@ -254,18 +260,28 @@ export default function Main() {
               <TextField
                 autoFocus
                 margin="dense"
+                id="isbn"
+                label="Isbn"
+                value={libroNuevo.isbn}
+                type="text"
+                fullWidth
+                variant="standard"
+                disabled
+              />
+              <TextField
+                autoFocus
+                margin="dense"
                 id="titulo"
                 label="Titulo"
                 value={libroNuevo.titulo}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, titulo: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="autor"
                 label="Autor"
@@ -273,12 +289,11 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, autor: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="descripcion"
                 label="Descripcion"
@@ -286,12 +301,11 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, descripcion: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="valor"
                 label="Valor"
@@ -299,12 +313,11 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: any; }; }) =>
                   setLibroNuevo({ ...libroNuevo, valor: e.target.value })
                 }
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="unidades"
                 label="Unidades"
@@ -312,7 +325,7 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e) =>
+                onChange={(e: { target: { value: string; }; }) =>
                   setLibroNuevo({
                     ...libroNuevo,
                     unidades: parseInt(e.target.value),

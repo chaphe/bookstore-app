@@ -1,6 +1,7 @@
 package example.libraries;
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.hibernate.annotations.GenericGenerator;
@@ -11,8 +12,10 @@ import org.hibernate.annotations.GenericGenerator;
 @Getter
 public class Book {
 
-    @Id @GeneratedValue(generator="system-uuid")
-    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Id
+    @JsonProperty("ISBN")
+//    @GeneratedValue(generator="system-uuid")
+//    @GenericGenerator(name="system-uuid", strategy = "uuid")
     @Column(name = "ISBN")
     private String ISBN;
 

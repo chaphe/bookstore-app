@@ -5,11 +5,6 @@ import "./App.css";
 import Main from "./components/Main";
 
 function App() {
-
-    function imprimirVariables(){
-        console.log(process.env.REACT_APP_API_URL);
-    }
-
   return (
     <>
       <AppBar position="static">
