@@ -146,6 +146,8 @@ docker compose -f docker-compose-backends.yml -p library up
 
 3. Desplegar los Frontends
 
+Configurar [docker-compose-frontends.yml](docker-compose-frontends.yml) con la IP de la maquina de despliegue. 
+
 ```
 docker compose -f docker-compose-frontends.yml -p library up
 ```
