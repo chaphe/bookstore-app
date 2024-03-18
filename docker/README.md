@@ -107,7 +107,7 @@ Después de desplegar el contenedor MongoDB es necesario correr ```node Initialm
 Una vez ejecutado el script podemos desplegar el contenedor del backend de reviews
 
 ```
-docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image
+docker run --name backend-reviews --network=library-network -e MONGODB_HOST=mongodb-reviews -d -p 3000:3000 backend-reviews-image
 ```
 Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
 ### Backend de Store
