@@ -1,86 +1,49 @@
 package example.libraries;
-import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.hibernate.annotations.GenericGenerator;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "Book")
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
+@Setter
+@Schema(name = "Book", description = "Book entity")
 public class Book {
 
     @Id
     @JsonProperty("ISBN")
-//    @GeneratedValue(generator="system-uuid")
-//    @GenericGenerator(name="system-uuid", strategy = "uuid")
+    @Schema(example = "9789585579668")
     @Column(name = "ISBN")
     private String ISBN;
 
-    @Column(name="titulo")
+    @Schema(example = "Foundation")
+    @Column(name = "titulo")
     private String titulo;
 
-    @Column(name="autor")
+    @Schema(example = "Isaac Asimov")
+    @Column(name = "autor")
     private String autor;
 
-    @Column(name="descripcion")
+    @Schema(example = "The Foundation series is a science fiction book series written by American author Isaac Asimov.")
+    @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name="valor")
+    @Schema(example = "$12.99")
+    @Column(name = "valor")
     private String valor;
 
-    @Column(name="unidades")
+    @Schema(example = "10")
+    @Column(name = "unidades")
     private Integer unidades;
 
-    public String getISBN() {
-        return ISBN;
-    }
-
-    public void setISBN(String ISBN) {
-        this.ISBN = ISBN;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getAutor() {
-        return autor;
-    }
-
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public String getValor() {
-        return valor;
-    }
-
-    public void setValor(String valor) {
-        this.valor = valor;
-    }
-
-    public Integer getUnidades() {
-        return unidades;
-    }
-
-    public void setUnidades(Integer unidades) {
-        this.unidades = unidades;
-    }
-
-    public Book(){}
 }

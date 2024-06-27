@@ -38,7 +38,7 @@ public class StoreController {
     }
 
     @GetMapping("/getcart")
-    public ResponseEntity<?> GetCartUser(@RequestParam(value = "usuario") String nombreuser) {
+    public ResponseEntity<List<Cart>> GetCartUser(@RequestParam(value = "usuario") String nombreuser) {
         List<Cart> booksList = service.GetCart(nombreuser);// new ArrayList<Book>(books.values());
         return new ResponseEntity<List<Cart>>(booksList, HttpStatus.OK);
     }
