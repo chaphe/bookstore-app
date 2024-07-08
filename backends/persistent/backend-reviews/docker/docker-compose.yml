@@ -1,0 +1,29 @@
+version: "3.2"
+services:
+  mongodb-reviews:
+    environment:
+      - MONGO_INITDB_DATABASE=test
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb-reviews-vol:/data/db
+      - ../backends/persistent/:/docker-entrypoint-initdb.d
+    image: 'mongo:5.0.5'
+    networks:
+      - book-store-network
+  backend-reviews:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - MONGODB_HOST=mongodb-reviews
+    ports:
+      - "3000:3000"
+    networks:
+      - book-store-network
+volumes:
+  mongodb-reviews-vol:
+    external: false
+networks:
+  book-store-network:
+    driver: bridge

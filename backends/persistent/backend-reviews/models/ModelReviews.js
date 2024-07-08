@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 
-var reviewModel = mongoose.model("reviewsModel",
-    {
-        usuario: String,
-        isbn: String,
-        estrellas: Number,
-        comentario: String
-    }, "reviews");
+let reviewSchema = new mongoose.Schema({
+    usuario: String,
+    isbn: String,
+    estrellas: Number,
+    comentario: String
+});
 
-module.exports = reviewModel;
+const Review = mongoose.model('Review', reviewSchema);
+
+module.exports = Review;
