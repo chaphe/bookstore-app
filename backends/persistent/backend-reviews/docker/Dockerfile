@@ -10,7 +10,9 @@ ENV MONGODB_HOST=localhost
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
 # where available (npm@5+)
-COPY package.json ./
+COPY package*.json ./
+
+RUN chown node:node package*.json
 
 USER node
 

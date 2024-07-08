@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var cors = require("cors");
 var moongose = require("mongoose");
+var reviewsModel = require("./models/ModelReviews");
 
 var app = express();
 
@@ -22,10 +23,15 @@ console.log(uri_mongodb);
 moongose.connect(uri_mongodb, null, (err) => {
     if (err)
         console.log(err)
-    else console.log("=> Connect with mongondb")
+    else console.log("=> Connected to MongoDB")
 });
 
 var reseñaRouter = require('./routes/reviews');
 app.use('/', reseñaRouter);
+
+var {swaggerJSDocs: reviewsSwaggerDocs} = require("./swagger");
+app.listen( () => {
+    reviewsSwaggerDocs(app);
+});
 
 module.exports = app;
