@@ -3,7 +3,7 @@ version: "3.2"
 services:
 
   backend-reviews:
-    image: 'chaphe/backend-reviews-image:1.0'
+    image: 'chaphe/backend-reviews-image:1.1'
     environment:
       - MONGODB_HOST=mongodb-reviews
     ports:
@@ -13,7 +13,7 @@ services:
 
   # CATALOG
   backend-catalog:
-    image: 'chaphe/backend-catalog-image:1.0'
+    image: 'chaphe/backend-catalog-image:1.1'
     ports:
       - "8081:8081"
     networks:
@@ -27,7 +27,7 @@ services:
   # STORE
 
   backend-store:
-    image: 'chaphe/backend-store-image:1.0'
+    image: 'chaphe/backend-store-image:1.1'
     ports:
       - "8082:8082"
     networks:
