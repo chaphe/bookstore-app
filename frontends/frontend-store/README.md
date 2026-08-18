@@ -1,27 +1,72 @@
-# Sakai
+# frontend-store - Frontend Tienda
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.4.
+Frontend de la tienda virtual de libros: permite consultar el catálogo, ver reseñas de los lectores y administrar el carrito de compras (agregar libros y realizar la compra).
 
-## Development server
+## Stack tecnológico
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- Angular 14
+- PrimeNG 14 / PrimeFlex
+- TypeScript 4 (basado en el template Sakai)
 
-## Code scaffolding
+## Backends a los que se conecta
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Se comunica con 3 backends mediante peticiones REST. Las URLs base se configuran en el archivo `src/assets/env.js`:
 
-## Build
+```js
+(function (window) {
+    window['env'] = window['env'] || {};
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+    // Environment variables
+    window['env']['storeUrl'] = 'http://localhost:8082';
+    window['env']['reviewsUrl'] = 'http://localhost:3000';
+    window['env']['catalogUrl'] = 'http://localhost:8081';
+})(this);
+```
 
-## Running unit tests
+| Variable | Backend | Puerto por defecto |
+| --- | --- | --- |
+| `storeUrl` | backend-store (carrito de compras) | 8082 |
+| `reviewsUrl` | backend-reviews (reseñas de lectores) | 3000 |
+| `catalogUrl` | backend-catalog (catálogo de libros) | 8081 |
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Cambia los valores por las URLs de tus backends.
 
-## Running end-to-end tests
+## Ejecución en desarrollo
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Instalar dependencias:
 
-## Further help
+```
+npm install
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Iniciar el servidor de desarrollo:
+
+```
+npm start
+```
+
+o bien:
+
+```
+ng serve
+```
+
+La aplicación se abrirá en [http://localhost:4200](http://localhost:4200). Se recargará automáticamente al hacer cambios en el código fuente.
+
+## Build de producción
+
+```
+npm run build
+```
+
+o bien:
+
+```
+ng build
+```
+
+Compila la aplicación y guarda los artefactos en el directorio `./dist` (según la propiedad `outputPath` de `angular.json`). Este directorio es el que sirve la imagen Docker mediante nginx.
+
+## Despliegue en Docker
+
+La imagen Docker construye la aplicación y la sirve con nginx en el puerto 80. Para ver los detalles de despliegue de toda la aplicación consulta [docker/README.md](../../docker/README.md).

@@ -1,46 +1,46 @@
-# Getting Started with Create React App
+# frontend-catalog - Frontend Catálogo de Libros
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend que muestra el catálogo de libros disponibles en la librería y permite agregar y eliminar libros.
 
-## Available Scripts
+## Stack tecnológico
 
-In the project directory, you can run:
+- React 17
+- Material UI (MUI) 5 / Material UI 4
+- TypeScript 4
+- Create React App 4
 
-### `npm start`
+## Backend al que se conecta
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Se comunica con el backend de catálogo (`backend-catalog`) mediante peticiones REST. La URL base se configura con la variable de entorno `REACT_APP_CATALOG_URL` definida en el archivo `.env`:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```
+REACT_APP_CATALOG_URL=http://localhost:8081/api
+```
 
-### `npm test`
+## Ejecución en desarrollo
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Instalar dependencias:
 
-### `npm run build`
+```
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Iniciar el servidor de desarrollo:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+npm start
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+La aplicación se abrirá en [http://localhost:3001](http://localhost:3001) (el puerto 3001 se configura en el `.env`). La página se recargará automáticamente al hacer cambios en el código.
 
-### `npm run eject`
+## Build de producción
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+```
+npm run build
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Compila la aplicación y guarda los artefactos en el directorio `./dist` (según la variable `BUILD_PATH` del `.env`). Este directorio es el que sirve la imagen Docker mediante nginx.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Despliegue en Docker
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+La imagen Docker construye la aplicación y la sirve con nginx en el puerto 80. Para ver los detalles de despliegue de toda la aplicación consulta [docker/README.md](../../docker/README.md).

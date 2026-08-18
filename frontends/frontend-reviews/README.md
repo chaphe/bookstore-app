@@ -1,27 +1,64 @@
-# FrontendReview
+# frontend-reviews - Frontend Reseñas de Lectores
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 13.0.2.
+Frontend que muestra las reseñas que han hecho los lectores sobre los libros de la librería.
 
-## Development server
+## Stack tecnológico
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- Angular 13
+- Angular Material 13
+- TypeScript 4
 
-## Code scaffolding
+## Backend al que se conecta
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Se comunica con el backend de reseñas (`backend-reviews`) mediante peticiones REST. La URL base se configura en el archivo `src/assets/env.js`:
 
-## Build
+```js
+(function (window) {
+    window['env'] = window['env'] || {};
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+    // Environment variables
+    window['env']['reviewsUrl'] = 'http://localhost:3000';
+})(this);
+```
 
-## Running unit tests
+Cambia el valor de `reviewsUrl` por la URL de tu backend de reseñas.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Ejecución en desarrollo
 
-## Running end-to-end tests
+Instalar dependencias:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
+npm install
+```
 
-## Further help
+Iniciar el servidor de desarrollo:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+npm start
+```
+
+o bien:
+
+```
+ng serve
+```
+
+La aplicación se abrirá en [http://localhost:4200](http://localhost:4200). Se recargará automáticamente al hacer cambios en el código fuente.
+
+## Build de producción
+
+```
+npm run build
+```
+
+o bien:
+
+```
+ng build
+```
+
+Compila la aplicación y guarda los artefactos en el directorio `./dist` (según la propiedad `outputPath` de `angular.json`). Este directorio es el que sirve la imagen Docker mediante nginx.
+
+## Despliegue en Docker
+
+La imagen Docker construye la aplicación y la sirve con nginx en el puerto 80. Para ver los detalles de despliegue de toda la aplicación consulta [docker/README.md](../../docker/README.md).

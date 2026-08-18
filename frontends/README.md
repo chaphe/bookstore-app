@@ -1,70 +1,65 @@
+# Frontends - Librería Virtual
 
-# Instrucciones de generación de artefactos de despliegue
+Este directorio contiene los 3 frontends de la aplicación Librería Virtual. Cada frontend se comunica con uno o varios de los backends de la aplicación mediante peticiones HTTP (REST).
+
+| Componente | Stack | Carpeta | Backend(s) al que se conecta |
+| --- | --- | --- | --- |
+| Catálogo de libros | React 17 + Material UI (Create React App) | [frontend-catalog](frontend-catalog/) | backend-catalog (`:8081`) |
+| Reseñas de lectores | Angular 13 + Angular Material | [frontend-reviews](frontend-reviews/) | backend-reviews (`:3000`) |
+| Tienda | Angular 14 + PrimeNG | [frontend-store](frontend-store/) | backend-store (`:8082`), backend-reviews (`:3000`), backend-catalog (`:8081`) |
+
+Para ver los detalles de cada frontend consulta el `README.md` de su carpeta:
+
+- [frontend-catalog/README.md](frontend-catalog/README.md)
+- [frontend-reviews/README.md](frontend-reviews/README.md)
+- [frontend-store/README.md](frontend-store/README.md)
 
 ## Instalación de dependencias
-Ejecutar el siguiente comando en una terminal
+
+Ejecutar el siguiente comando en una terminal dentro de cada una de las carpetas de los frontends:
+
 ```
-npm install 
+npm install
 ```
-en cada una de las siguientes carpetas:  
 
->frontend-catalog-library 
+y esperar a que el proceso termine.
 
->frontend-reviews 
+## Build de los Frontends
 
->frontend-store
+El comando de build compila cada proyecto y guarda el resultado en el directorio `./dist` (los archivos estáticos resultantes son servidos por nginx en la imagen Docker).
 
-y dejar que el proceso termine
+### frontend-catalog (React)
 
-
-## Build Frontends
-### frontend-catalog-library
-dentro de esta carpeta en una terminal ejecutar 
 ```
 npm run build
 ```
-esto compila el proyecto y lo guarda en ./dist
 
-NOTA: dentro de .env se encuentra BUILD_PATH que le dice a react en que directorio guadarlo.
+> NOTA: dentro del archivo `.env` se encuentra la variable `BUILD_PATH` que indica a React en qué directorio guardar el build.
 
-### frontend-reviews
-dentro de esta carpeta en una terminal ejecutar
+### frontend-reviews (Angular)
+
 ```
 npm run build
 ```
-tambien funciona 
+
+también funciona:
+
 ```
 ng build
 ```
-NOTA: dentro de angular.json 
-```json
-"build": {
-          ...
-          "options": {
-              ...
-            "outputPath": "./dist"
-              ...
-          }
-```
-outputPath indica el directorio donde se guardara los archivos compilados.
 
-### frontend-store
-dentro de esta carpeta en una terminal ejecutar
+> NOTA: dentro de `angular.json` la propiedad `outputPath` de la configuración `build` indica el directorio donde se guardan los archivos compilados (en este proyecto está configurado en `./dist`).
+
+### frontend-store (Angular)
+
 ```
 npm run build
 ```
-tambien funciona 
+
+también funciona:
+
 ```
 ng build
 ```
-NOTA: dentro de angular.json 
-```json
-"build": {
-          ...
-          "options": {
-              ...
-            "outputPath": "./dist"
-              ...
-          }
-```
-outputPath indica el directorio donde se guardara los archivos compilados.
+
+> NOTA: dentro de `angular.json` la propiedad `outputPath` de la configuración `build` indica el directorio donde se guardan los archivos compilados (en este proyecto está configurado en `./dist`).
