@@ -1,28 +1,43 @@
 import {
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  tableCellClasses,
-  styled,
+  Alert,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  IconButton,
+  Paper,
+  Snackbar,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
+  Typography,
+  tableCellClasses,
+  styled,
 } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import React from "react";
 import axios from "axios";
-const host = process.env.REACT_APP_CATALOG_URL;
+import Libro from "../models/Libro";
+
+const host = process.env.REACT_APP_CATALOG_URL || "http://localhost:8081/api";
+
+const libroVacio: Libro = {
+  titulo: "",
+  autor: "",
+  descripcion: "",
+  valor: "",
+  unidades: 0,
+  isbn: "",
+};
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -44,53 +59,68 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function Main() {
-  interface Libro {
-    titulo: string;
-    autor: string;
-    descripcion: string;
-    valor: string;
-    unidades: number;
-    isbn: string;
-  }
+interface SnackbarState {
+  open: boolean;
+  message: string;
+  severity: "success" | "error";
+}
 
+export default function Main() {
   const [libros, setLibros] = React.useState<Libro[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [libroForm, setLibroForm] = React.useState<Libro>(libroVacio);
+
+  const [openAgregar, setOpenAgregar] = React.useState(false);
+  const [openEditar, setOpenEditar] = React.useState(false);
+  const [openDelete, setOpenDelete] = React.useState(false);
+
+  const [snackbar, setSnackbar] = React.useState<SnackbarState>({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  const mostrarMensaje = (message: string, severity: "success" | "error") => {
+    setSnackbar({ open: true, message, severity });
+  };
+
+  const cerrarMensaje = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
   const getLibros = async () => {
-    const response = await fetch(host + "/getlibros");
-    const data = await response.json();
-    setLibros(data);
+    setLoading(true);
+    try {
+      const response = await axios.get<Libro[]>(host + "/getlibros");
+      setLibros(response.data);
+    } catch (error) {
+      mostrarMensaje(
+        "No se pudieron cargar los libros. Verifique que el backend este activo.",
+        "error"
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   React.useEffect(() => {
     getLibros();
   }, []);
 
-  // Agregar libro
-  function AgregarLibro() {
-    handleClickOpenAgregar();
-  }
-
-  function guardarNuevoLibro() {
-    handleCloseAgregar();
-    axios
-      .post(host +"/libro", libroNuevo)
-      .then((res) => {
-        getLibros();
-      });
-  }
-
-  const [openAgregar, setOpenAgregar] = React.useState(false);
+  const validarLibro = (libro: Libro): string | null => {
+    if (!libro.isbn.trim()) return "El ISBN es requerido";
+    if (!libro.titulo.trim()) return "El titulo es requerido";
+    if (!libro.autor.trim()) return "El autor es requerido";
+    if (!libro.descripcion.trim()) return "La descripcion es requerida";
+    if (libro.valor === "" || isNaN(Number(libro.valor)) || Number(libro.valor) <= 0)
+      return "El valor debe ser un numero mayor que 0";
+    if (!Number.isInteger(libro.unidades) || libro.unidades < 0)
+      return "Las unidades deben ser un entero mayor o igual que 0";
+    return null;
+  };
 
   const handleClickOpenAgregar = () => {
-    setLibroNuevo({
-      titulo: "",
-      autor: "",
-      descripcion: "",
-      valor: "",
-      unidades: 0,
-      isbn: "",
-    });
+    setLibroForm(libroVacio);
     setOpenAgregar(true);
   };
 
@@ -98,59 +128,72 @@ export default function Main() {
     setOpenAgregar(false);
   };
 
-  const [libroNuevo, setLibroNuevo] = React.useState<Libro>({
-    titulo: "",
-    autor: "",
-    descripcion: "",
-    valor: "",
-    unidades: 0,
-    isbn: "",
-  });
-
-  //Editar libro
-
-  const [openEditar, setOpenEditar] = React.useState(false);
-
-  const handleClickOpenEditar = () => {
-    setOpenEditar(true);
-  };
+  function guardarNuevoLibro() {
+    const error = validarLibro(libroForm);
+    if (error) {
+      mostrarMensaje(error, "error");
+      return;
+    }
+    axios
+      .post(host + "/libro", libroForm)
+      .then(() => {
+        handleCloseAgregar();
+        getLibros();
+        mostrarMensaje("Libro agregado correctamente", "success");
+      })
+      .catch(() => {
+        mostrarMensaje("No se pudo agregar el libro", "error");
+      });
+  }
 
   const handleCloseEditar = () => {
     setOpenEditar(false);
   };
 
   function EditarLibro(libro: Libro) {
-    setLibroNuevo(libro);
-    handleClickOpenEditar();
+    setLibroForm(libro);
+    setOpenEditar(true);
   }
 
   function guardarLibroEditado() {
-    handleCloseEditar();
-    axios.put(host + "/libro", libroNuevo).then((res) => {
-      getLibros();
-    });
+    const error = validarLibro(libroForm);
+    if (error) {
+      mostrarMensaje(error, "error");
+      return;
+    }
+    axios
+      .put(host + "/libro", libroForm)
+      .then(() => {
+        handleCloseEditar();
+        getLibros();
+        mostrarMensaje("Libro actualizado correctamente", "success");
+      })
+      .catch(() => {
+        mostrarMensaje("No se pudo actualizar el libro", "error");
+      });
   }
-
-  const [openDelete, setOpenDelete] = React.useState(false);
-
-  const handleClickOpenDelete = () => {
-    setOpenDelete(true);
-  };
 
   const handleCloseDelete = () => {
     setOpenDelete(false);
   };
 
   function eliminarLibro() {
-    setOpenDelete(false);
-    axios.delete(host + `/deletelibro?ISBN=${libroNuevo.isbn}`).then((res) => {
-      setLibros(libros.filter((libro) => libro.isbn !== libroNuevo.isbn));
-    });
+    handleCloseDelete();
+    axios
+      .delete(host + `/deletelibro?ISBN=${libroForm.isbn}`)
+      .then(() => {
+        getLibros();
+        mostrarMensaje("Libro eliminado correctamente", "success");
+      })
+      .catch(() => {
+        mostrarMensaje("No se pudo eliminar el libro", "error");
+      });
   }
 
   function confirmarEliminarLibro(isbn: string) {
-    setLibroNuevo(libros.filter((libro) => libro.isbn === isbn)[0]);
-    handleClickOpenDelete();
+    const libro = libros.find((l) => l.isbn === isbn);
+    if (libro) setLibroForm(libro);
+    setOpenDelete(true);
   }
 
   return (
@@ -161,7 +204,7 @@ export default function Main() {
           <Button
             variant="contained"
             color="primary"
-            onClick={AgregarLibro}
+            onClick={handleClickOpenAgregar}
             sx={{
               marginTop: 4,
               marginBottom: 1,
@@ -183,8 +226,8 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, isbn: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, isbn: e.target.value })
                 }
               />
               <TextField
@@ -194,8 +237,8 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, titulo: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, titulo: e.target.value })
                 }
               />
               <TextField
@@ -205,8 +248,8 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, autor: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, autor: e.target.value })
                 }
               />
               <TextField
@@ -216,8 +259,8 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, descripcion: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, descripcion: e.target.value })
                 }
               />
               <TextField
@@ -227,8 +270,8 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, valor: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, valor: e.target.value })
                 }
               />
               <TextField
@@ -238,10 +281,10 @@ export default function Main() {
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: string; }; }) =>
-                  setLibroNuevo({
-                    ...libroNuevo,
-                    unidades: parseInt(e.target.value),
+                onChange={(e) =>
+                  setLibroForm({
+                    ...libroForm,
+                    unidades: parseInt(e.target.value) || 0,
                   })
                 }
               />
@@ -251,7 +294,7 @@ export default function Main() {
               <Button onClick={() => guardarNuevoLibro()}>Guardar</Button>
             </DialogActions>
           </Dialog>
-          <Dialog open={openEditar} onClose={handleClickOpenEditar}>
+          <Dialog open={openEditar} onClose={handleCloseEditar}>
             <DialogTitle>Editar libro</DialogTitle>
             <DialogContent>
               <DialogContentText>
@@ -262,73 +305,72 @@ export default function Main() {
                 margin="dense"
                 id="isbn"
                 label="Isbn"
-                value={libroNuevo.isbn}
+                value={libroForm.isbn}
                 type="text"
                 fullWidth
                 variant="standard"
                 disabled
               />
               <TextField
-                autoFocus
                 margin="dense"
                 id="titulo"
                 label="Titulo"
-                value={libroNuevo.titulo}
+                value={libroForm.titulo}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, titulo: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, titulo: e.target.value })
                 }
               />
               <TextField
                 margin="dense"
                 id="autor"
                 label="Autor"
-                value={libroNuevo.autor}
+                value={libroForm.autor}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, autor: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, autor: e.target.value })
                 }
               />
               <TextField
                 margin="dense"
                 id="descripcion"
                 label="Descripcion"
-                value={libroNuevo.descripcion}
+                value={libroForm.descripcion}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, descripcion: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, descripcion: e.target.value })
                 }
               />
               <TextField
                 margin="dense"
                 id="valor"
                 label="Valor"
-                value={libroNuevo.valor}
+                value={libroForm.valor}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: any; }; }) =>
-                  setLibroNuevo({ ...libroNuevo, valor: e.target.value })
+                onChange={(e) =>
+                  setLibroForm({ ...libroForm, valor: e.target.value })
                 }
               />
               <TextField
                 margin="dense"
                 id="unidades"
                 label="Unidades"
-                value={libroNuevo.unidades}
+                value={libroForm.unidades}
                 type="text"
                 fullWidth
                 variant="standard"
-                onChange={(e: { target: { value: string; }; }) =>
-                  setLibroNuevo({
-                    ...libroNuevo,
-                    unidades: parseInt(e.target.value),
+                onChange={(e) =>
+                  setLibroForm({
+                    ...libroForm,
+                    unidades: parseInt(e.target.value) || 0,
                   })
                 }
               />
@@ -338,84 +380,108 @@ export default function Main() {
               <Button onClick={() => guardarLibroEditado()}>Guardar</Button>
             </DialogActions>
           </Dialog>
-          <Dialog
-        open={openDelete}
-        onClose={handleCloseDelete}
->
-        <DialogTitle style={{ cursor: 'move' }} id="draggable-dialog-title">
-          Eliminar libro
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Esta seguro que desea eliminar el libro {libroNuevo.titulo}?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleCloseDelete}>
-            Cancel
-          </Button>
-          <Button onClick={ eliminarLibro }>Eliminar</Button>
-        </DialogActions>
-      </Dialog>
+          <Dialog open={openDelete} onClose={handleCloseDelete}>
+            <DialogTitle style={{ cursor: "move" }} id="draggable-dialog-title">
+              Eliminar libro
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                ¿Esta seguro que desea eliminar el libro {libroForm.titulo}?
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button autoFocus onClick={handleCloseDelete}>
+                Cancel
+              </Button>
+              <Button onClick={eliminarLibro}>Eliminar</Button>
+            </DialogActions>
+          </Dialog>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
               <TableHead>
                 <TableRow>
-                  <StyledTableCell align="center" width="250px">
-                    Titulo
-                  </StyledTableCell>
+                  <StyledTableCell align="center">ISBN</StyledTableCell>
+                  <StyledTableCell align="center">Titulo</StyledTableCell>
                   <StyledTableCell align="center">Autor</StyledTableCell>
-                  <StyledTableCell align="center">Decripción</StyledTableCell>
+                  <StyledTableCell align="center">Descripcion</StyledTableCell>
                   <StyledTableCell align="center">Valor</StyledTableCell>
                   <StyledTableCell align="center">Unidades</StyledTableCell>
                   <StyledTableCell align="center"></StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {libros.map((libro) => (
-                  <StyledTableRow
-                    key={libro.isbn}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <StyledTableCell component="th" scope="row">
-                      {libro.titulo}
+                {loading ? (
+                  <TableRow>
+                    <StyledTableCell colSpan={7} align="center">
+                      <CircularProgress size={30} />
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {libro.autor}
+                  </TableRow>
+                ) : libros.length === 0 ? (
+                  <TableRow>
+                    <StyledTableCell colSpan={7} align="center">
+                      <Typography variant="body1">
+                        No hay libros en el catalogo.
+                      </Typography>
                     </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {libro.descripcion}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {libro.valor}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      {libro.unidades}
-                    </StyledTableCell>
-                    <StyledTableCell align="center">
-                      <IconButton
-                        onClick={() => {
-                          EditarLibro(libro);
-                        }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => {
-                          confirmarEliminarLibro(libro.isbn);
-                        }}
-                      >
-                        <DeleteForeverIcon />
-                      </IconButton>
-                    </StyledTableCell>
-                  </StyledTableRow>
-                ))}
+                  </TableRow>
+                ) : (
+                  libros.map((libro) => (
+                    <StyledTableRow key={libro.isbn}>
+                      <StyledTableCell align="center">
+                        {libro.isbn}
+                      </StyledTableCell>
+                      <StyledTableCell component="th" scope="row">
+                        {libro.titulo}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {libro.autor}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {libro.descripcion}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {libro.valor}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        {libro.unidades}
+                      </StyledTableCell>
+                      <StyledTableCell align="center">
+                        <IconButton
+                          aria-label="editar"
+                          onClick={() => EditarLibro(libro)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label="eliminar"
+                          onClick={() => confirmarEliminarLibro(libro.isbn)}
+                        >
+                          <DeleteForeverIcon />
+                        </IconButton>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </TableContainer>
         </Grid>
         <Grid item xs={2}></Grid>
       </Grid>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={cerrarMensaje}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert
+          onClose={cerrarMensaje}
+          severity={snackbar.severity}
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
