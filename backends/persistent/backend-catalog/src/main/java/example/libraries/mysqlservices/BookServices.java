@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import example.libraries.Book;
+import example.libraries.exception.BookNotFoundException;
 
 @Service
 public class BookServices implements IbookService {
@@ -28,6 +29,9 @@ public class BookServices implements IbookService {
     @Override
     @Transactional(readOnly = false)
     public void Delete(String isbn) {
+        if (!repo.existsById(isbn)) {
+            throw new BookNotFoundException(isbn);
+        }
         repo.deleteByISBN(isbn);
     }
 
@@ -37,8 +41,12 @@ public class BookServices implements IbookService {
     }
 
     @Override
+    @Transactional(readOnly = false)
     public Book updateBook(Book book) {
-        var bookToUpdate = repo.findBookByISBN(book.getISBN());
+        Book bookToUpdate = repo.findBookByISBN(book.getISBN());
+        if (bookToUpdate == null) {
+            throw new BookNotFoundException(book.getISBN());
+        }
         bookToUpdate.setAutor(book.getAutor());
         bookToUpdate.setDescripcion(book.getDescripcion());
         bookToUpdate.setTitulo(book.getTitulo());
