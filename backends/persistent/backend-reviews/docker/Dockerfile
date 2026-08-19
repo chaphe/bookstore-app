@@ -16,9 +16,7 @@ RUN chown node:node package*.json
 
 USER node
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+RUN npm ci --omit=dev
 
 # Bundle app source
 COPY --chown=node:node . .

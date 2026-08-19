@@ -10,6 +10,7 @@ Esta es la versión **persistente**. La versión in-memory (sin base de datos) s
 - Express 4
 - Mongoose (ODM para MongoDB)
 - Swagger (swagger-jsdoc + swagger-ui-express)
+- Jest + Supertest (tests)
 
 ## Ejecución
 
@@ -57,6 +58,14 @@ El servicio expone la documentación interactiva de su API (OpenAPI) en:
 - Swagger UI: [http://localhost:3000/docs](http://localhost:3000/docs)
 - Especificación JSON: [http://localhost:3000/docs.json](http://localhost:3000/docs.json)
 
+## Tests
+
+```
+npm test
+```
+
+Ejecuta la suite de tests (Jest + Supertest) sobre las rutas de la API usando un modelo de Mongoose mockeado (no requiere MongoDB).
+
 ## API
 
 ### GET /reviews
@@ -88,7 +97,7 @@ Parámetros (query params):
 | --- | --- | --- | --- |
 | `usuario` | string | Sí | Nombre del usuario que hizo la reseña |
 | `isbn` | string | Sí | ISBN del libro reseñado |
-| `estrellas` | number | Sí | Calificación en estrellas |
+| `estrellas` | integer | Sí | Calificación en estrellas (entero entre 1 y 5) |
 | `comentario` | string | Sí | Comentario de la reseña |
 
 Ejemplo:
@@ -97,10 +106,24 @@ Ejemplo:
 POST http://localhost:3000/addreviews?usuario=Pechocha&isbn=9789585191426&estrellas=5&comentario=Un%20libro%20inspirador
 ```
 
-Respuesta:
+Respuestas:
+
+| Código | Caso |
+| --- | --- |
+| `201` | La reseña fue creada |
+| `200` | La reseña existente fue actualizada |
+| `400` | Parámetros faltantes o inválidos |
+
+Cuerpo en caso de éxito:
 
 ```json
 { "code": "OK" }
+```
+
+En caso de error de validación (400):
+
+```json
+{ "error": ["isbn es requerido", "estrellas debe ser un entero entre 1 y 5"] }
 ```
 
 ### DELETE /deletereviews
@@ -120,13 +143,21 @@ Ejemplo:
 DELETE http://localhost:3000/deletereviews?usuario=Pechocha&isbn=9789585191426
 ```
 
-Respuesta:
+Respuestas:
+
+| Código | Caso |
+| --- | --- |
+| `200` | La reseña fue eliminada |
+| `400` | Parámetros faltantes |
+| `404` | La reseña no existe |
+
+Cuerpo en caso de éxito:
 
 ```json
 { "code": "OK" }
 ```
 
-Si la reseña no existe, retorna:
+Si la reseña no existe (404):
 
 ```json
 { "error": "no existe en la base de datos" }

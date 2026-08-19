@@ -1,26 +1,23 @@
-/**
- * Module dependencies.
- */
+require('dotenv').config();
+const mongoose = require('mongoose');
+const http = require('http');
+const app = require('./app');
 
-var app = require('./app');
-var http = require('http');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = process.env.PORT || '3000';
+const port = process.env.PORT || '3000';
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
+mongoose.set('strictQuery', true);
 
-var server = http.createServer(app);
+const uri_mongodb = `mongodb://${process.env.MONGODB_HOST}:27017/test`;
+console.log(uri_mongodb);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
+mongoose.connect(uri_mongodb, (err) => {
+    if (err)
+        console.log(err)
+    else console.log("=> Connected to MongoDB")
+});
+
+const server = http.createServer(app);
 
 server.listen(port);
-console.log("Server start in port localhost:",port);
+console.log("Server start in port localhost:", port);

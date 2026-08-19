@@ -2,6 +2,16 @@ var express = require('express');
 const reviewsModel = require('../models/ModelReviews');
 var router = express.Router();
 
+const validateReview = ({ usuario, isbn, estrellas, comentario }) => {
+    const errors = [];
+    if (!usuario || typeof usuario !== 'string') errors.push('usuario es requerido');
+    if (!isbn || typeof isbn !== 'string') errors.push('isbn es requerido');
+    const stars = Number(estrellas);
+    if (!Number.isInteger(stars) || stars < 1 || stars > 5) errors.push('estrellas debe ser un entero entre 1 y 5');
+    if (!comentario || typeof comentario !== 'string') errors.push('comentario es requerido');
+    return errors;
+};
+
 /**
  * @swagger
  * components:
@@ -47,19 +57,19 @@ var router = express.Router();
  *            schema:
  *              type: array
  *              items:
- *                $ref: '#components/schemas/Review'
- *      400:
- *        description: Bad Request
- *      404:
- *        description: Not Found
+ *                $ref: '#/components/schemas/Review'
  *      500:
  *        description: Server Error
  */
 
-router.get('/reviews', async function (req, res, next) {
-  console.log("-> request /reviews")
-  var docs = await reviewsModel.find({})
-  res.json(docs);
+router.get('/reviews', async function (req, res) {
+  try {
+    var docs = await reviewsModel.find({})
+    res.json(docs);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 
@@ -88,7 +98,7 @@ router.get('/reviews', async function (req, res, next) {
  *        schema:
  *          type: number
  *          required: true
- *        description: Star rating of the reviewed book
+ *        description: Star rating of the reviewed book (1 to 5)
  *      - in: query
  *        name: comentario
  *        schema:
@@ -98,28 +108,31 @@ router.get('/reviews', async function (req, res, next) {
  *    responses:
  *      201:
  *        description: Created review
- *      409:
- *        description: Conflict
- *      404:
- *        description: Not Found
+ *      200:
+ *        description: Updated review
+ *      400:
+ *        description: Bad Request - missing or invalid parameters
  *      500:
  *        description: Server Error
  */
 
-/* POST users listing. */
-router.post('/addreviews', async function (req, res, next) {
-  console.log("-> post reviews")
-  var doc = await reviewsModel.findOne({ isbn: req.query.isbn, usuario: req.query.usuario });
-  if (doc == null) {
-    reviewsModel.insertMany(req.query).then((state) => {
-      res.json({ code: "OK" });
-    })
-      .catch((err) => { console.error(err); res.json({ error: err }); });
-  } else {
-    reviewsModel.findByIdAndUpdate(doc._id, req.query).then((state) => {
-      res.json({ code: "OK" });
-    })
-      .catch((err) => { console.error(err); res.json({ error: err }); });
+router.post('/addreviews', async function (req, res) {
+  const { usuario, isbn, estrellas, comentario } = req.query;
+  const errors = validateReview({ usuario, isbn, estrellas, comentario });
+  if (errors.length > 0) {
+    return res.status(400).json({ error: errors });
+  }
+  try {
+    const result = await reviewsModel.findOneAndUpdate(
+      { usuario, isbn },
+      { $set: { usuario, isbn, estrellas: Number(estrellas), comentario } },
+      { upsert: true, new: true, includeResultMetadata: true }
+    );
+    const updatedExisting = result.lastErrorObject ? result.lastErrorObject.updatedExisting : false;
+    res.status(updatedExisting ? 200 : 201).json({ code: "OK" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -146,24 +159,29 @@ router.post('/addreviews', async function (req, res, next) {
  *    responses:
  *      200:
  *        description: Deleted review
- *      409:
- *        description: Conflict
+ *      400:
+ *        description: Bad Request - missing parameters
  *      404:
- *        description: Not Found
+ *        description: Review not found
  *      500:
  *        description: Server Error
  */
 
-/* DELETE users listing. */
-router.delete('/deletereviews', async function (req, res, next) {
-  var doc = await reviewsModel.findOne({ isbn: req.query.isbn, usuario: req.query.usuario });
-  if (doc == null) {
-    res.json({ error: "no existe en la base de datos" });
-  } else {
-    reviewsModel.deleteOne({ _id: doc._id }).then((state) => {
-      res.json({ code: "OK" });
-    })
-      .catch((err) => { console.error(err); res.json({ error: err }); });
+router.delete('/deletereviews', async function (req, res) {
+  const { usuario, isbn } = req.query;
+  if (!usuario || !isbn) {
+    return res.status(400).json({ error: "usuario e isbn son requeridos" });
+  }
+  try {
+    var doc = await reviewsModel.findOne({ isbn, usuario });
+    if (doc == null) {
+      return res.status(404).json({ error: "no existe en la base de datos" });
+    }
+    await reviewsModel.deleteOne({ _id: doc._id });
+    res.json({ code: "OK" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
   }
 });
 

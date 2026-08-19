@@ -1,4 +1,4 @@
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "mannulus",
     isbn: "9789584295446",
@@ -6,7 +6,7 @@ db.reviews.insert(
     comentario: "no es muy bueno, muy aburrido, perfiero una pelicula"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "chaphe",
     isbn: "9789584276971",
@@ -14,7 +14,7 @@ db.reviews.insert(
     comentario: "una excelente guia del autocuidado"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "mapache",
     isbn: "9789584295446",
@@ -22,7 +22,7 @@ db.reviews.insert(
     comentario: "Aunque no murio por snuznu muy interesante un poco ficticio"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "javier",
     isbn: "9789585190603",
@@ -30,7 +30,7 @@ db.reviews.insert(
     comentario: "este libro me ayudo a comprender el metabolismo de mi cuerpo y a lllevar un estilo de vida más saludable"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "manuel",
     isbn: "9789585190603",
@@ -38,7 +38,7 @@ db.reviews.insert(
     comentario: "al menos pase un rato leyendo no me aporto nada pero es facil de leer"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "maria",
     isbn: "9789585190603",
@@ -47,7 +47,7 @@ db.reviews.insert(
 });
 
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "dayana",
     isbn: "9789585190300",
@@ -57,7 +57,7 @@ db.reviews.insert(
 );
 
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "samuel",
     isbn: "9789585190300",
@@ -66,7 +66,7 @@ db.reviews.insert(
 });
 
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "carlos",
     isbn: "9789585191066",
@@ -75,7 +75,7 @@ db.reviews.insert(
 });
 
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "sammy",
     isbn: "9789585190366",
@@ -83,7 +83,7 @@ db.reviews.insert(
     comentario: "uno de los mejores libros que he leido"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "jhon",
     isbn: "9789585190001",
@@ -92,7 +92,7 @@ db.reviews.insert(
 });
 
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "gabriel",
     isbn: "9789585190001",
@@ -100,7 +100,7 @@ db.reviews.insert(
     comentario: "muy infantil."
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "GabrielVega",
     isbn: "10010090321",
@@ -108,7 +108,7 @@ db.reviews.insert(
     comentario: "Gran libro para aprender a programar, sin embargo me quedó la duda de ¿cuál es la entrada y cuál es la salida?"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "FelipeCabeza",
     isbn: "10010090321",
@@ -116,7 +116,7 @@ db.reviews.insert(
     comentario: "Obra magnifica, aprendí a hacer el factorial"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "MarkSuckerberg",
     isbn: "10010090321",
@@ -124,7 +124,7 @@ db.reviews.insert(
     comentario: "Me sirvió para hacer Facebook👍🏻😎📘"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "GabrielVega",
     isbn: "123132131321",
@@ -132,7 +132,7 @@ db.reviews.insert(
     comentario: "Un clásico de la literatura"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "FelipeCabeza",
     isbn: "03213128888",
@@ -141,7 +141,7 @@ db.reviews.insert(
 }
 );
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "Mohammed",
     isbn: "0321299999",
@@ -149,7 +149,7 @@ db.reviews.insert(
     comentario: "No sé qué es docker jaja "
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "GabrielVega",
     isbn: "0321299999",
@@ -157,7 +157,7 @@ db.reviews.insert(
     comentario: "Me sirvió para el trabajo de software :)"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "FelipeCabeza",
     isbn: "10010090321",
@@ -165,7 +165,7 @@ db.reviews.insert(
     comentario: "Estaba tan bueno que me lo compré otra vez, pero esta vez no me gustó tanto 😕"
 });
 
-db.reviews.insert(
+db.reviews.insertOne(
 {
     usuario: "MarkSuckerberg",
     isbn: "9789584276971",
