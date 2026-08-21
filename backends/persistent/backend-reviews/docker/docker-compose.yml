@@ -1,6 +1,7 @@
-version: "3.2"
+version: "3.8"
 services:
   mongodb-reviews:
+    image: 'mongo:7.0'
     environment:
       - MONGO_INITDB_DATABASE=test
     ports:
@@ -8,9 +9,15 @@ services:
     volumes:
       - mongodb-reviews-vol:/data/db
       - ../backends/persistent/:/docker-entrypoint-initdb.d
-    image: 'mongo:5.0.5'
     networks:
       - book-store-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   backend-reviews:
     build:
       context: ..
@@ -21,9 +28,13 @@ services:
       - "3000:3000"
     networks:
       - book-store-network
+    depends_on:
+      mongodb-reviews:
+        condition: service_healthy
+
 volumes:
   mongodb-reviews-vol:
-    external: false
+
 networks:
   book-store-network:
     driver: bridge
