@@ -1,0 +1,45 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Editar Reseña' : 'Agregar Reseña' }}</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="review-form">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Usuario</mat-label>
+      <input matInput formControlName="usuario" placeholder="Nombre de usuario" />
+      <mat-error *ngIf="form.get('usuario')?.hasError('required')">
+        El usuario es requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>ISBN</mat-label>
+      <input matInput formControlName="isbn" placeholder="ISBN del libro" />
+      <mat-error *ngIf="form.get('isbn')?.hasError('required')">
+        El ISBN es requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Estrellas (1-5)</mat-label>
+      <input matInput type="number" formControlName="estrellas" min="1" max="5" />
+      <mat-error *ngIf="form.get('estrellas')?.hasError('required')">
+        Las estrellas son requeridas
+      </mat-error>
+      <mat-error *ngIf="form.get('estrellas')?.hasError('min') || form.get('estrellas')?.hasError('max')">
+        Debe ser un numero entre 1 y 5
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Comentario</mat-label>
+      <textarea matInput formControlName="comentario" rows="4" placeholder="Tu comentario..."></textarea>
+      <mat-error *ngIf="form.get('comentario')?.hasError('required')">
+        El comentario es requerido
+      </mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="form.invalid">
+    {{ isEdit ? 'Actualizar' : 'Guardar' }}
+  </button>
+</mat-dialog-actions>

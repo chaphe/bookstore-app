@@ -1,74 +1,96 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { environment } from './../environments/environment';
-
-interface Review {
-  usuario: string,
-  isbn: string,
-  estrellas: number,
-  comentario: string
-}
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Review, ReviewService } from './review.service';
+import { ReviewDialogComponent } from './review-dialog.component';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-
-export class AppComponent {
-  //host = "http://localhost:3000"//direccion del servidor
-  host = environment.reviewsUrl;//direccion del servidor
+export class AppComponent implements OnInit {
   title = 'frontend-review';
-  lista: Review[] = []
+  reviews: Review[] = [];
+  loading = true;
+  errorMessage = '';
 
-  /*
-  otra manera de obtener la referencia hacia un elemento en el DOM
-  @ViewChild('isbn') 
-  isbn: ElementRef | null = null;*/
-  public isbnbyid = "";//con viewChild
+  constructor(
+    private reviewService: ReviewService,
+    private dialog: MatDialog
+  ) {}
 
-  public usuario = "";
-  public isbn = "";
-  public stars = 0;
-  public comentario = "";
-  public id: string | null = null;
-
-
-  constructor(private http: HttpClient) {
-    http.get(this.host + "/reviews").subscribe((res) => {
-      console.log(res);
-      this.lista = res as Review[];
-    })
+  ngOnInit(): void {
+    this.loadReviews();
   }
 
-  sendreview() {
-    this.http.post(this.host+`/addreviews?usuario=${this.usuario}&isbn=${this.isbn}&estrellas=${this.stars}&comentario=${this.comentario}`, null).subscribe((res) => {
-      console.log(res);
-      var data = { usuario: this.usuario, isbn: this.isbn, comentario: this.comentario, estrellas: this.stars }
-
-      var index = this.lista.findIndex(e => e.isbn == this.isbn && e.usuario == this.usuario);
-      if (index == -1) {
-        this.lista.push(data);
-        alert("nueva reseña agregada");
-      } else {
-        this.lista[index] = data;
-        alert("reseña actualizada");
+  loadReviews(): void {
+    this.loading = true;
+    this.errorMessage = '';
+    this.reviewService.getReviews().subscribe({
+      next: (data) => {
+        this.reviews = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.message;
+        this.loading = false;
       }
-
-    })
-  }
-  deleteitem(item: Review) {
-    console.log(item)
-    this.http.delete(this.host + `/deletereviews?usuario=${item.usuario}&isbn=${item.isbn}`).subscribe((res) => {
-      this.lista = this.lista.filter(e => e != item);
-    })
-  }
-  editar(item: Review) {
-    this.usuario = item.usuario;
-    this.isbn = item.isbn;
-    this.comentario = item.comentario;
-    this.stars = item.estrellas;
+    });
   }
 
+  openDialog(review?: Review): void {
+    const dialogRef = this.dialog.open(ReviewDialogComponent, {
+      width: '400px',
+      data: review || null
+    });
 
+    dialogRef.afterClosed().subscribe((result: Review | undefined) => {
+      if (result) {
+        if (review) {
+          this.updateReview(review, result);
+        } else {
+          this.addReview(result);
+        }
+      }
+    });
+  }
+
+  addReview(newReview: Review): void {
+    this.reviewService.addReview(newReview).subscribe({
+      next: () => {
+        this.loadReviews();
+      },
+      error: (err) => {
+        alert(err.message);
+      }
+    });
+  }
+
+  updateReview(oldReview: Review, updatedReview: Review): void {
+    this.reviewService.addReview(updatedReview).subscribe({
+      next: () => {
+        this.loadReviews();
+      },
+      error: (err) => {
+        alert(err.message);
+      }
+    });
+  }
+
+  deleteReview(review: Review): void {
+    if (confirm(`¿Eliminar la reseña de ${review.usuario} para ISBN ${review.isbn}?`)) {
+      this.reviewService.deleteReview(review.usuario, review.isbn).subscribe({
+        next: () => {
+          this.loadReviews();
+        },
+        error: (err) => {
+          alert(err.message);
+        }
+      });
+    }
+  }
+
+  trackByReview(index: number, review: Review): string {
+    return `${review.usuario}-${review.isbn}`;
+  }
 }
