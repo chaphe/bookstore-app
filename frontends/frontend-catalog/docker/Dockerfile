@@ -1,7 +1,7 @@
 # ============================================================
 # STAGE 1: Build React app
 # ============================================================
-FROM node:20-alpine AS build
+FROM node:16-alpine AS build
 
 WORKDIR /app
 
@@ -40,4 +40,4 @@ EXPOSE 80
 ENV CATALOG_URL=http://backend-catalog:8081
 
 # Runtime substitution
-CMD ["/bin/sh", "-c", "envsubst '\$CATALOG_URL' < /usr/share/nginx/html/env.sample.js > /usr/share/nginx/html/env.js && exec nginx -g 'daemon off;'"]
+CMD /bin/sh -c "envsubst '\$CATALOG_URL' < /usr/share/nginx/html/env.sample.js > /usr/share/nginx/html/env.js && exec nginx -g 'daemon off;'"

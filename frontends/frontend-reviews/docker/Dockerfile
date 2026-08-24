@@ -41,4 +41,4 @@ EXPOSE 80
 ENV REVIEWS_URL=http://backend-reviews:3000
 
 # Sustitución de variable + arranque nginx
-CMD ["/bin/sh", "-c", "envsubst '\$REVIEWS_URL' < /usr/share/nginx/html/assets/env.sample.js > /usr/share/nginx/html/assets/env.js && exec nginx -g 'daemon off;'"]
+CMD /bin/sh -c "envsubst '\$REVIEWS_URL' < /usr/share/nginx/html/assets/env.sample.js > /usr/share/nginx/html/assets/env.js && exec nginx -g 'daemon off;'"
