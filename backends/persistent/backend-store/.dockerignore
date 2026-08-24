@@ -1,0 +1,17 @@
+target
+.mvn
+*.jar
+*.war
+*.ear
+.git
+.gitignore
+.github
+*.log
+README.md
+Dockerfile*
+docker-compose*.yml
+.env
+.env.*
+.idea
+.vscode
+*.iml

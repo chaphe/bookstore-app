@@ -1,10 +1,10 @@
 package store.backendstore;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,30 +13,23 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "cart")
+@IdClass(CartId.class)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 public class Cart {
-    /// The id
     @Id
-    @Schema(example = "1")
-    public String id;
-
-    /// The user
-    @Schema(example = "Juan")
+    @Schema(example = "usuario1")
     @Column(name = "usuario")
     public String usuario;
 
-    /// The ISBN
-    @Schema(example = "987654321")
+    @Id
+    @Schema(example = "9789584295446")
     @Column(name = "isbn")
     public String isbn;
 
-    /// The number of books
-    @Schema(example = "10")
+    @Schema(example = "2")
     @Column(name = "cantidad")
     public Integer cantidad;
-
-
 }

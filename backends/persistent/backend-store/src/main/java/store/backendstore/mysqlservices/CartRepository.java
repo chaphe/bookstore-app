@@ -9,25 +9,17 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import store.backendstore.Cart;
-//import store.backendstore.Usuario;
+import store.backendstore.CartId;
 
 @Repository
-public interface CartRepository extends CrudRepository<Cart, String> {
-    //@Query(value = "CALL GetAllUser()", nativeQuery = true)
-    //public List<Usuario> GetAllUser();
-
-    @Query(value = "CALL GetCartUser(:user)", nativeQuery = true)
-    public List<Cart> GetCartUser(@Param("user") String user);
+public interface CartRepository extends CrudRepository<Cart, CartId> {
+    List<Cart> findByUsuario(String usuario);
 
     @Modifying
-    @Query(value = "CALL AddCartUser(:usuario, :isbn, :cant)", nativeQuery = true)
-    public void addcart(@Param("isbn") String isbn, @Param("usuario") String user, @Param("cant") int cant);
+    @Query("DELETE FROM Cart c WHERE c.usuario = :usuario AND c.isbn = :isbn")
+    void deleteByUsuarioAndIsbn(@Param("usuario") String usuario, @Param("isbn") String isbn);
 
     @Modifying
-    @Query(value = "CALL DeleteCartUser(:usuario, :isbn)", nativeQuery = true)
-    public void deleteCart(@Param("isbn") String isbn, @Param("usuario") String user);
-
-    @Modifying
-    @Query(value = "CALL DeleteAllCartUser(:usuario)", nativeQuery = true)
-    public void deleteAllCart(@Param("usuario") String user);
+    @Query("DELETE FROM Cart c WHERE c.usuario = :usuario")
+    void deleteByUsuario(@Param("usuario") String usuario);
 }
