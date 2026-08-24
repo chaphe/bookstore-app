@@ -1,30 +1,46 @@
-#Utilizamos la imagen de maven para crear el artefacto desplegable (jar) del proyecto
-FROM maven:3.9.6-eclipse-temurin-17 AS maven
+# ============================================================
+# STAGE 1: Build con Maven
+# ============================================================
+FROM maven:3.9.6-eclipse-temurin-17 AS build
 
-#Copiamos el codigo fuente dentro de la imagen
-COPY ./src /usr/local/app/src
+WORKDIR /app
 
-#Copiamos el pom dentro de la imagen y en la raiz del directorio de la app
-COPY ./pom.xml /usr/local/app
+# Cache de dependencias: solo pom.xml primero
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-#Definimos el directorio de la aplicaciøn
-WORKDIR /usr/local/app
-
-#Ejecutamos los comandos clean y package propios de maven para generar el jar,
-#saltamos los test para que no de error
+# Copia código y compila
+COPY src ./src
 RUN mvn clean package -DskipTests
 
+# ============================================================
+# STAGE 2: Runtime
+# ============================================================
+FROM eclipse-temurin:17-jre-alpine
 
-#Partimos ahora de una imagen de java
-FROM eclipse-temurin:17
-#Define las variables de ambiente
-ENV MYSQL_DB_HOST=mysql-library
+# Non-root user
+RUN addgroup -g 1000 -S appgroup && adduser -u 1000 -S appuser -G appgroup
+
+WORKDIR /app
+
+# Copia JAR (wildcard para no hardcodear versión)
+COPY --from=build /app/target/*.jar app.jar
+
+# Permisos
+RUN chown appuser:appgroup /app/app.jar
+
+USER appuser
+
+EXPOSE 8081
+
+# Health check: endpoint GET /api/getlibros
+HEALTHCHECK --interval=30s --timeout=3s --start-period=20s --retries=3 \
+  CMD wget -q --spider http://localhost:8081/api/getlibros || exit 1
+
+# Vars por defecto (sobrescribir en deploy)
+ENV MYSQL_DB_HOST=mysql-catalog
 ENV MYSQL_DB_PORT=3306
 ENV MYSQL_DB_USERNAME=root
 ENV MYSQL_DB_PASSWORD=password
-# Copia el jar ejecutable de la imagen auxiliar alias mavn
-COPY  --from=maven /usr/local/app/target/backend-catalog-library-0.0.1-SNAPSHOT.jar /usr/share/app.jar
-# Lanza el ejecutable usando java
-CMD ["java", "-jar", "/usr/share/app.jar"]
-# Expone el puerto 8081
-EXPOSE 8081
+
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

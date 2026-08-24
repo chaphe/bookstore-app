@@ -1,7 +1,8 @@
-node_modules
-npm-debug.log
-dist
-.angular
+target
+.mvn
+*.jar
+*.war
+*.ear
 .git
 .gitignore
 .github

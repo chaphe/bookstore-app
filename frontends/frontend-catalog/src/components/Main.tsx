@@ -28,7 +28,18 @@ import React from "react";
 import axios from "axios";
 import Libro from "../models/Libro";
 
-const host = process.env.REACT_APP_CATALOG_URL || "http://localhost:8081/api";
+// Runtime config: env variable (build-time) -> window.env (runtime Docker) -> default
+declare global {
+  interface Window {
+    env?: {
+      CATALOG_URL?: string;
+    };
+  }
+}
+const runtimeCatalogUrl = (typeof window !== 'undefined' && window.env?.CATALOG_URL)
+  ? window.env.CATALOG_URL
+  : null;
+const host = process.env.REACT_APP_CATALOG_URL || runtimeCatalogUrl || "http://localhost:8081/api";
 
 const libroVacio: Libro = {
   titulo: "",
