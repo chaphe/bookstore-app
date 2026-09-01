@@ -107,4 +107,10 @@ Realiza la compra de los libros y envía a través de RabbitMQ un mensaje al mic
 
 ## Backend de Entregas (Shipping Backend)
 
-Este servicio se encarga de proveer la información de gestión de la entrega de productos. Es una implementación simple que solo "imprime" la información de la compra en la consola. Para comunicarse con el servicio de Tienda (Store) usa el broker de mensajería RabbitMQ. No expone API HTTP, consume los mensajes de la cola `cartshop`.
+Este servicio se encarga de proveer la información de gestión de la entrega de productos. Para comunicarse con el servicio de Tienda (Store) usa el broker de mensajería RabbitMQ: consume los mensajes de compra de la cola `cartshop` y los almacena en una estructura de datos en memoria. Expone una API HTTP para consultar los mensajes recibidos:
+
+- **GET /messages**: lista de todos los mensajes recibidos (admite el filtro `?usuario=<usuario>`).
+- **GET /messages/:id**: detalle de un mensaje concreto.
+- **GET /health**: estado del servicio.
+
+Los mensajes se guardan en memoria RAM (no hay persistencia) y se conservan las últimas 50.

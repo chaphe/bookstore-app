@@ -21,7 +21,7 @@ import lombok.Setter;
 public class Book {
 
     @Id
-    @JsonProperty("ISBN")
+    @JsonProperty("isbn")
     @Schema(example = "9789585579668")
     @Column(name = "ISBN")
     private String ISBN;

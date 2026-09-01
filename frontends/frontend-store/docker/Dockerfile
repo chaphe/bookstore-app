@@ -1,32 +1,45 @@
-# Dockerfile to build and server the Angular application
- 
+# ============================================================
+# STAGE 1: Build React app with Vite
+# ============================================================
+FROM node:20-alpine AS build
 
-###############
-### STAGE 1: Build app
-###############
-FROM node:16-alpine as build
+WORKDIR /app
 
-WORKDIR /usr/local/app
-# Add the source code to app
-COPY ./ /usr/local/app/
-# Install all the dependencies
-RUN npm install
-# Generate the build of the application
+# Cache deps
+COPY package*.json ./
+RUN npm ci
+
+# Build
+COPY . .
 RUN npm run build
 
-###############
-### STAGE 2: Serve app with nginx ###
-###############
-FROM nginx:1.21.4-alpine
-#Define las variables de ambiente
-ENV STORE_URL=http://localhost:8082
-ENV REVIEWS_URL=http://localhost:3000
-ENV CATALOG_URL=http://localhost:8081
+# ============================================================
+# STAGE 2: Runtime nginx
+# ============================================================
+FROM nginx:1.26-alpine
 
-COPY  --from=build /usr/local/app/dist /usr/share/nginx/html
+# Non-root
+RUN chown -R nginx:nginx /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 
-# Expose port 80
+# Config SPA
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Build output
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Template para runtime config
+COPY docker/env.sample.js /usr/share/nginx/html/env.sample.js
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -q --spider http://localhost/ || exit 1
+
 EXPOSE 80
 
-# When the container starts, replace the env.js with values from environment variables
-CMD ["/bin/sh",  "-c",  "envsubst < /usr/share/nginx/html/assets/env.sample.js > /usr/share/nginx/html/assets/env.js && exec nginx -g 'daemon off;'"]
+# Variable por defecto
+ENV CATALOG_URL=http://backend-catalog:8081/api
+ENV REVIEWS_URL=http://backend-reviews:3000
+ENV STORE_URL=http://backend-store:8082/api
+
+# Runtime substitution
+CMD /bin/sh -c "envsubst '\$CATALOG_URL \$REVIEWS_URL \$STORE_URL' < /usr/share/nginx/html/env.sample.js > /usr/share/nginx/html/env.js && exec nginx -g 'daemon off;'"

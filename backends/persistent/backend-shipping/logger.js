@@ -1,13 +1,7 @@
-const winston = require("winston");
-
-const options = {
-    format: winston.format.json(),
-    transports: [
-        new winston.transports.Console({ level: "info" }),
-        new winston.transports.File({ filename: "shopping.txt", level: "info" }),
-    ]
+const logger = {
+  info: (msg, meta) => console.log('[INFO]', new Date().toISOString(), msg, meta || ''),
+  error: (msg, meta) => console.error('[ERROR]', new Date().toISOString(), msg, meta || ''),
+  warn: (msg, meta) => console.warn('[WARN]', new Date().toISOString(), msg, meta || '')
 };
-
-const logger = winston.createLogger(options);
 
 module.exports = logger;

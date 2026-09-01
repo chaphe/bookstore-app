@@ -1,17 +1,16 @@
 {
-  "name": "broker-store",
+  "name": "backend-shipping",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Simple shipping backend - stores messages in memory",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.8.0",
-    "dotenv": "^16.0.0",
-    "winston": "^3.6.0"
+    "amqplib": "^0.10.3",
+    "dotenv": "^16.3.1",
+    "express": "^4.22.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
   }
 }

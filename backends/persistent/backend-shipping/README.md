@@ -1,8 +1,8 @@
 # backend-shipping (persistente) - Backend Entregas
 
-Microservicio encargado de la gestión de la entrega de los libros comprados en la tienda. Es una implementación simple: **consume los mensajes de compra** enviados por `backend-store` a través de RabbitMQ y los registra en la consola y en el archivo `shopping.txt`.
+Microservicio encargado de la gestión de la entrega de los libros comprados en la tienda. **Consume los mensajes de compra** enviados por `backend-store` a través de RabbitMQ (cola `cartshop`), los almacena en una **estructura de datos en memoria** y expone una **API HTTP** para consultar los mensajes recibidos.
 
-**Este servicio no expone API HTTP.** La comunicación es asíncrona mediante un broker de mensajería RabbitMQ (cola `cartshop`).
+La comunicación con `backend-store` es asíncrona mediante un broker de mensajería RabbitMQ (cola `cartshop`).
 
 ## Arquitectura
 
@@ -41,7 +41,7 @@ npm install
 npm start
 ```
 
-Al iniciarse, el servicio queda a la espera de mensajes en la cola `cartshop`:
+Al iniciarse, el servicio levanta la API HTTP (puerto `3000` por defecto) y queda a la espera de mensajes en la cola `cartshop`:
 
 ```
 [*] Waiting for messages. To exit press CTRL+C
@@ -53,6 +53,35 @@ Al iniciarse, el servicio queda a la espera de mensajes en la cola `cartshop`:
 docker build -t backend-shipping-image -f docker/Dockerfile .
 docker run --name backend-shipping --network library-network -e RABBITMQ_HOST=rabbitmq backend-shipping-image
 ```
+
+## API HTTP
+
+Además de consumir la cola, el servicio expone los siguientes endpoints para consultar los mensajes de compra almacenados en memoria:
+
+| Método | Endpoint | Descripción |
+| --- | --- | --- |
+| `GET` | `/health` | Estado del servicio y cantidad de mensajes almacenados. |
+| `GET` | `/messages` | Lista de todos los mensajes de compra recibidos. Soporta el filtro `?usuario=<usuario>`. |
+| `GET` | `/messages/:id` | Detalle de un mensaje concreto (identificado por su `id`). Devuelve `404` si no existe. |
+
+Ejemplo:
+
+```
+GET /messages
+[
+  {
+    "usuario": "student",
+    "carrito": [ { "id": "4", "usuario": "student", "isbn": "10010090321", "cantidad": 1 } ],
+    "id": "1693000000000-ab12cd34",
+    "at": "2026-08-27T12:00:00.000Z"
+  }
+]
+
+GET /messages?usuario=student
+GET /messages/1693000000000-ab12cd34
+```
+
+> **Nota:** los mensajes se guardan en memoria RAM (no hay persistencia). Se conservan las últimas `MAX_MESSAGES` (por defecto 50); al superar el límite se descarta el más antiguo. Al reiniciar el servicio se pierden.
 
 ## Cola RabbitMQ
 
