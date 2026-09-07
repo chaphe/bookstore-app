@@ -1,43 +1,88 @@
-# Build commands for Frontends
+# Comandos para crear imágenes Docker
 
-```
-docker build -t frontend-catalog-image -f docker/Dockerfile .
-```
+Ejecutar desde la **raíz del proyecto** (`bookstore-app/`).
 
-```
-docker build -t frontend-reviews-image -f docker/Dockerfile .
-```
+## Frontends
 
-```
-docker build -t frontend-store-image -f docker/Dockerfile .
+### Frontend de Catálogo
+
+```bash
+docker build -t frontend-catalog-image -f frontends/frontend-catalog/Dockerfile frontends/frontend-catalog/
 ```
 
-# Build commands for Backends without persistence
+### Frontend de Reviews
 
-```
-docker build -t backend-catalog-image:simple -f docker/Dockerfile .
-```
-
-```
-docker build -t backend-reviews-image:simple -f docker/Dockerfile .
+```bash
+docker build -t frontend-reviews-image -f frontends/frontend-reviews/Dockerfile frontends/frontend-reviews/
 ```
 
+### Frontend de Store
 
-# Build commands for Backends with persistence
+```bash
+docker build -t frontend-store-image -f frontends/frontend-store/Dockerfile frontends/frontend-store/
+```
 
-## Backend Catalog
+## Backends sin persistencia
+
+### Backend de Catálogo
+
+```bash
+docker build -t backend-catalog-image:simple -f backends/persistent/backend-catalog/Dockerfile backends/persistent/backend-catalog/
 ```
-docker build -t backend-catalog-image -f docker/Dockerfile .
+
+### Backend de Reviews
+
+```bash
+docker build -t backend-reviews-image:simple -f backends/persistent/backend-reviews/Dockerfile backends/persistent/backend-reviews/
 ```
-## Backend Reviews
+
+## Backends con persistencia
+
+### Backend de Catálogo
+
+```bash
+docker build -t backend-catalog-image -f backends/persistent/backend-catalog/Dockerfile backends/persistent/backend-catalog/
 ```
-docker build -t backend-reviews-image -f docker/Dockerfile .
+
+### Backend de Reviews
+
+```bash
+docker build -t backend-reviews-image -f backends/persistent/backend-reviews/Dockerfile backends/persistent/backend-reviews/
 ```
-## Backend Store
+
+### Backend de Store
+
+```bash
+docker build -t backend-store-image -f backends/persistent/backend-store/Dockerfile backends/persistent/backend-store/
 ```
-docker build -t backend-store-image -f docker/Dockerfile .
+
+### Backend de Shipping
+
+```bash
+docker build -t backend-shipping-image -f backends/persistent/backend-shipping/Dockerfile backends/persistent/backend-shipping/
 ```
-## Backend Shipping
-```
-docker build -t backend-shipping-image -f docker/Dockerfile .
+
+## Publicar imágenes en Docker Hub
+
+```bash
+docker tag backend-catalog-image chaphe/backend-catalog-image:1.2
+docker push chaphe/backend-catalog-image:1.2
+
+docker tag backend-reviews-image chaphe/backend-reviews-image:1.2
+docker push chaphe/backend-reviews-image:1.2
+
+docker tag backend-store-image chaphe/backend-store-image:1.2
+docker push chaphe/backend-store-image:1.2
+
+docker tag backend-shipping-image chaphe/backend-shipping-image:1.2
+docker push chaphe/backend-shipping-image:1.2
+
+docker tag frontend-catalog-image chaphe/frontend-catalog-image:1.2
+docker push chaphe/frontend-catalog-image:1.2
+
+docker tag frontend-reviews-image chaphe/frontend-reviews-image:1.2
+docker push chaphe/frontend-reviews-image:1.2
+
+docker tag frontend-store-image chaphe/frontend-store-image:1.2
+docker push chaphe/frontend-store-image:1.2
 ```

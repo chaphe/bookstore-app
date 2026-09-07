@@ -1,153 +1,247 @@
-- [Despliegue de la aplicación manualmente usando Docker](#despliegue-de-la-aplicación-manualmente-usando-docker)
-  - [Creación de la red para la aplicación](#creación-de-la-red-para-la-aplicación)
-  - [Despliegue de los Frontends](#despliegue-de-los-frontends)
-    - [Frontend de Catalogo](#frontend-de-catalogo)
-    - [Frontend de Reviews](#frontend-de-reviews)
-    - [Frontend de Store](#frontend-de-store)
-  - [Despliegue de los Backends sin Persistencia](#despliegue-de-los-backends-sin-persistencia)
-    - [Backend de Reviews](#backend-de-reviews)
-    - [Backend de Catalogo](#backend-de-catalogo)
-  - [Despliegue de los Backends con persistencia](#despliegue-de-los-backends-con-persistencia)
-    - [Backend de Catalogo](#backend-de-catalogo-1)
-    - [Backend de Reviews](#backend-de-reviews-1)
-    - [Backend de Store](#backend-de-store)
-- [Despliegue de la aplicación usando Docker Compose](#despliegue-de-la-aplicación-usando-docker-compose)
+# Despliegue de la aplicación con Docker
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+## Tabla de contenidos
 
-# Despliegue de la aplicación manualmente usando Docker
+- [Estructura de archivos](#estructura-de-archivos)
+- [Despliegue manual con Docker](#despliegue-manual-con-docker)
+  - [Creación de la red](#creación-de-la-red)
+  - [Despliegue de Frontends](#despliegue-de-frontends)
+  - [Despliegue de Backends sin persistencia](#despliegue-de-backends-sin-persistencia)
+  - [Despliegue de Backends con persistencia](#despliegue-de-backends-con-persistencia)
+- [Despliegue con Docker Compose (monolítico)](#despliegue-con-docker-compose-monolítico)
+  - [Opción 1: Imágenes pre-construidas](#opción-1-imágenes-pre-construidas)
+  - [Opción 2: Build desde código fuente](#opción-2-build-desde-código-fuente)
+- [Despliegue con Docker Compose (paso a paso)](#despliegue-con-docker-compose-paso-a-paso)
 
-Para desplegar la aplicación es necesario primero crear las imagenes Docker de los diferentes Frontends y Backends. Para crear las imagenes se puede revisar el siguiente [documento](create-images.md) 
+---
 
-## Creación de la red para la aplicación
-```
-docker network create library-network
-```
-## Despliegue de los Frontends
-
-### Frontend de Catalogo
-```
-docker run --name fronted-catalog --network=library-network -d -p 81:80 frontend-catalog-image
-```
-Frontend de Catalogo ir a [http://localhost:81](http://localhost:81) 
-
-### Frontend de Reviews
-```
-docker run --name fronted-reviews --network=library-network  -d -p 82:80 frontend-reviews-image
-```
-Frontend de Reviews ir a [http://localhost:82](http://localhost:82)
-
-### Frontend de Store
-```
-docker run --name fronted-store --network=library-network -d -p 80:80 frontend-store-image
-```
-Frontend de Store ir a [http://localhost](http://localhost)
-
-## Despliegue de los Backends sin Persistencia
-
-### Backend de Reviews
-```
-docker run --name backend-reviews --network=library-network -d -p 3000:3000 backend-reviews-image:simple
-```
-Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
-
-### Backend de Catalogo
-```
-docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image:simple
-```
-Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
-
-## Despliegue de los Backends con persistencia
-
-
-### Backend de Catalogo
-
-Para empezar hay que desplegar un contenedor con el servicio de base de datos MySQL, para esto tenemos 2 opciones:
-
-1. Con volumen anonimo
+## Estructura de archivos
 
 ```
-docker run --name mysql-library --network=library-network -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d mysql:8.0.27
+docker/
+├── docker-compose.yml               # Monolítico con imágenes pre-construidas (Docker Hub)
+├── docker-compose-build.yml         # Monolítico con build desde código fuente
+├── docker-compose-db.yml            # Paso 1: Solo bases de datos
+├── docker-compose-backends.yml      # Paso 2: Solo backends
+├── docker-compose-frontends.yml     # Paso 3: Solo frontends
+├── create-images.md                 # Comandos para crear imágenes Docker
+└── README.md                        # Este archivo
 ```
 
-2. Con volumen identificado
+---
 
-```
-docker run --name mysql-library --network=library-network -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d -v mysql-library-vol:/var/lib/mysql mysql:8.0.27
-```
+## Despliegue manual con Docker
 
-Después de desplegar el contenedor mysql es necesario correr los scripts catalog-script.sql y store-script.sql para crear y poblar la base de datos. Para esto se recomienda usar un cliente como HeidiSQL (user=root, password=password).
+Para desplegar la aplicación manualmente es necesario primero crear las imágenes Docker. Ver [create-images.md](create-images.md) para los comandos de build.
 
-Una vez ejecutados los scripts podemos desplegar el contenedor del backend del catalogo
+### Creación de la red
 
-```
-docker run --name backend-catalog --network=library-network -d -p 8081:8081 backend-catalog-image
-```
-Backend de Catalogo ir a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
-
-### Backend de Reviews
-
-Para empezar hay que desplegar un contenedor con el servicio de base de datos MongoDB, para esto tenemos 2 opciones:
-
-1. Con volumen anonimo
-
-```
-docker run --name=mongodb-reviews --network=library-network -d -p 27017:27017 mongo:5.0.5
+```bash
+docker network create bookstore-network
 ```
 
-2. Con volumen identificado
+### Despliegue de Frontends
 
-```
-docker run --name=mongodb-reviews --network=library-network -d -p 27017:27017 -v mongodb-reviews-vol:/data/db mongo:5.0.5
-```
+#### Frontend de Catálogo
 
-
-Después de desplegar el contenedor MongoDB es necesario correr ```node Initialmongodb.js``` para crear y poblar la base de datos de MongoDB
-
-Una vez ejecutado el script podemos desplegar el contenedor del backend de reviews
-
-```
-docker run --name backend-reviews --network=library-network -e MONGODB_HOST=mongodb-reviews -d -p 3000:3000 backend-reviews-image
-```
-Backend de Reviews ir a [http://localhost:3000/reviews](http://localhost:3000/reviews)
-### Backend de Store
-
-```
-docker run --name backend-store --network=library-network -d -p 8082:8082 backend-store-image
-```
-___
-
-# Despliegue de la aplicación usando Docker Compose
-
-Verificar que los archivos YAML a utilizar está correctamente creados (verificar nombre de las imagenes)
-
-[docker-compose-db.yml](docker-compose-db.yml)
-[docker-compose-backends.yml](docker-compose-backends.yml)
-[docker-compose-frontends.yml](docker-compose-frontends.yml)
-
-Para usar desplegar la aplicación usando Docker Compose se deben ejecutar tres etapas:
-
-1. Desplegar las bases de datos
-
-```
-docker compose -f docker-compose-db.yml -p library up
-```
-Una ves desplegadas las bases de datos se debe proceder a inicializarlas 
-
-Después de desplegar el contenedor mysql es necesario correr los scripts catalog-script.sql y store-script.sql para crear y poblar la base de datos. Para esto se recomienda usar un cliente como HeidiSQL (user=root, password=password).
-
-Después de desplegar el contenedor MongoDB es necesario correr ```node Initialmongodb.js``` para crear y poblar la base de datos de MongoDB
-
-2. Desplegar los Backends
-
-```
-docker compose -f docker-compose-backends.yml -p library up
+```bash
+docker run --name frontend-catalog --network=bookstore-network -d -p 8080:80 frontend-catalog-image
 ```
 
-3. Desplegar los Frontends
+Acceder a [http://localhost:8080](http://localhost:8080)
 
-Configurar [docker-compose-frontends.yml](docker-compose-frontends.yml) con la IP de la maquina de despliegue. 
+#### Frontend de Reviews
 
+```bash
+docker run --name frontend-reviews --network=bookstore-network -d -p 8082:80 frontend-reviews-image
 ```
-docker compose -f docker-compose-frontends.yml -p library up
+
+Acceder a [http://localhost:8082](http://localhost:8082)
+
+#### Frontend de Store
+
+```bash
+docker run --name frontend-store --network=bookstore-network -d -p 8083:80 frontend-store-image
+```
+
+Acceder a [http://localhost:8083](http://localhost:8083)
+
+### Despliegue de Backends sin persistencia
+
+#### Backend de Reviews
+
+```bash
+docker run --name backend-reviews --network=bookstore-network -d -p 3000:3000 backend-reviews-image
+```
+
+Acceder a [http://localhost:3000/reviews](http://localhost:3000/reviews)
+
+#### Backend de Catálogo
+
+```bash
+docker run --name backend-catalog --network=bookstore-network -d -p 8081:8081 backend-catalog-image
+```
+
+Acceder a [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros)
+
+### Despliegue de Backends con persistencia
+
+#### Backend de Catálogo
+
+Primero desplegar MySQL:
+
+```bash
+# Con volumen anónimo
+docker run --name mysql-catalog --network=bookstore-network -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d mysql:8.0
+
+# O con volumen nombrado (recomendado)
+docker run --name mysql-catalog --network=bookstore-network -e MYSQL_ROOT_PASSWORD=password -p 3306:3306 -d -v mysql-catalog-data:/var/lib/mysql mysql:8.0
+```
+
+Ejecutar el script `backends/persistent/catalog-script.sql` usando un cliente MySQL (user=root, password=password).
+
+Desplegar el backend:
+
+```bash
+docker run --name backend-catalog --network=bookstore-network -d -p 8081:8081 backend-catalog-image
+```
+
+#### Backend de Reviews
+
+Primero desplegar MongoDB:
+
+```bash
+# Con volumen anónimo
+docker run --name mongodb-reviews --network=bookstore-network -d -p 27017:27017 mongo:7.0
+
+# O con volumen nombrado (recomendado)
+docker run --name mongodb-reviews --network=bookstore-network -d -p 27017:27017 -v mongodb-reviews-data:/data/db mongo:7.0
+```
+
+Ejecutar `node Initialmongodb.js` para crear y poblar la base de datos.
+
+Desplegar el backend:
+
+```bash
+docker run --name backend-reviews --network=bookstore-network -e MONGODB_HOST=mongodb-reviews -d -p 3000:3000 backend-reviews-image
+```
+
+#### Backend de Store
+
+```bash
+docker run --name backend-store --network=bookstore-network -d -p 8084:8082 backend-store-image
+```
+
+#### Backend de Shipping
+
+```bash
+docker run --name backend-shipping --network=bookstore-network -d -p 8085:3000 backend-shipping-image
+```
+
+---
+
+## Despliegue con Docker Compose (monolítico)
+
+Ejecutar todos los servicios de una sola vez. Ejecutar desde el directorio `docker/`.
+
+### Opción 1: Imágenes pre-construidas
+
+Usa imágenes publicadas en Docker Hub. No requiere build previo.
+
+```bash
+docker compose -f docker-compose.yml -p bookstore up -d
+```
+
+Verificar el estado:
+
+```bash
+docker compose -p bookstore ps
+```
+
+Detener:
+
+```bash
+docker compose -p bookstore down
+```
+
+### Opción 2: Build desde código fuente
+
+Construye las imágenes a partir del código fuente. Requiere tiempo para el primer build.
+
+```bash
+docker compose -f docker-compose-build.yml -p bookstore up -d --build
+```
+
+Detener:
+
+```bash
+docker compose -p bookstore down
+```
+
+---
+
+## Despliegue con Docker Compose (paso a paso)
+
+Enfoque educativo para entender el despliegue por capas. Ejecutar desde el directorio `docker/`.
+
+### Paso 1: Desplegar bases de datos
+
+```bash
+docker compose -f docker-compose-db.yml -p bookstore up -d
+```
+
+Verificar que los contenedores estén saludables:
+
+```bash
+docker compose -p bookstore ps
+```
+
+Una vez desplegadas las bases de datos, inicializarlas:
+- **MySQL**: Ejecutar el script `backends/persistent/catalog-script.sql` con un cliente MySQL.
+- **MongoDB**: Ejecutar `node Initialmongodb.js` desde `backends/persistent/`.
+
+### Paso 2: Desplegar backends
+
+```bash
+docker compose -f docker-compose-backends.yml -p bookstore up -d
+```
+
+Verificar que los backends estén respondiendo:
+
+```bash
+curl http://localhost:8081/api/getlibros    # Backend Catalog
+curl http://localhost:3000/reviews          # Backend Reviews
+```
+
+### Paso 3: Desplegar frontends
+
+```bash
+docker compose -f docker-compose-frontends.yml -p bookstore up -d
+```
+
+### URLs de acceso
+
+| Servicio | URL |
+|---|---|
+| Frontend Catálogo | [http://localhost:8080](http://localhost:8080) |
+| Frontend Reviews | [http://localhost:8082](http://localhost:8082) |
+| Frontend Store | [http://localhost:8083](http://localhost:8083) |
+| Backend Catálogo | [http://localhost:8081/api/getlibros](http://localhost:8081/api/getlibros) |
+| Backend Reviews | [http://localhost:3000/reviews](http://localhost:3000/reviews) |
+| Backend Store | [http://localhost:8084/api/health](http://localhost:8084/api/health) |
+| Backend Shipping | [http://localhost:8085/health](http://localhost:8085/health) |
+| RabbitMQ Management | [http://localhost:15672](http://localhost:15672) (guest/guest) |
+| MySQL | localhost:3306 (root/password) |
+| MongoDB | localhost:27017 |
+
+### Detener todo
+
+```bash
+docker compose -p bookstore down
+```
+
+Para eliminar también los volúmenes:
+
+```bash
+docker compose -p bookstore down -v
 ```

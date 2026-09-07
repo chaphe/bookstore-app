@@ -1,51 +1,78 @@
-version: "3.2"
-
 services:
+  # ============================================================
+  # BASES DE DATOS
+  # ============================================================
+  mysql-catalog:
+    image: mysql:8.0
+    container_name: mysql-catalog
+    environment:
+      MYSQL_DATABASE: catalog-library
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: catalog
+      MYSQL_PASSWORD: catalog
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-catalog-data:/var/lib/mysql
+      - ../backends/persistent/catalog-script.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    command: --default-authentication-plugin=mysql_native_password
 
   mongodb-reviews:
+    image: mongo:7.0
+    container_name: mongodb-reviews
     environment:
-      - MONGO_INITDB_DATABASE=test
+      MONGO_INITDB_DATABASE: test
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
-      - mongodb-reviews-vol:/data/db
-      - ../backends/persistent/:/docker-entrypoint-initdb.d
-    image: 'mongo:5.0.5'
+      - mongodb-reviews-data:/data/db
+      - ../backends/persistent/:/docker-entrypoint-initdb.d:ro
     networks:
-      - book-store-network
-
-  # CATALOG
-  mysql-catalog-store:
-    image: 'mysql:8.0.27'
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=catalog-library
-    ports:
-      - '3306:3306'
-    volumes:
-      - mysql-library-vol:/var/lib/mysql
-      - ../backends/persistent/:/docker-entrypoint-initdb.d
-    networks:
-      - book-store-network
-
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   rabbitmq:
-    image: rabbitmq:3.9.13-management
-    ports:
-        - 5672:5672
-        - 15672:15672
-    networks:
-        - book-store-network
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    user: rabbitmq
     environment:
-      - RABBITMQ_DEFAULT_USER=guest 
-      - RABBITMQ_DEFAULT_PASS=guest
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
+# ============================================================
+# VOLUMES & NETWORKS
+# ============================================================
 volumes:
-  mysql-library-vol:
-    external: false
-  mongodb-reviews-vol:
-    external: false
+  mysql-catalog-data:
+  mongodb-reviews-data:
+  rabbitmq-data:
 
 networks:
-  book-store-network:
+  bookstore-network:
     driver: bridge

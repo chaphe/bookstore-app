@@ -1,126 +1,259 @@
-version: "3.1"
 services:
-
-  # REVIEWS
-  mongo:
-    container_name: mongodb-reviews
-    networks:
-      - library-network
-    ports:
-      - '27017:27017'
-    volumes:
-      - 'mongodb-reviews-vol:/data/configdb'
-    image: 'mongo:5.0.5'
-
-  backend-reviews:
-    container_name: backend-reviews
-    networks:
-      - library-network
-    build:
-      context: persistent-microservices/backend-reviews
-      dockerfile: ./docker/Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - mongo
-
-  frontend-reviews:
-    container_name: frontend-reviews
-    networks:
-      - library-network
-    build:
-      context: frontends/frontend-reviews
-      dockerfile: ./docker/Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - backend-reviews
-
-  # CATALOG
-
-  mysql:
-    image: 'mysql:8.0.27'
-    container_name: mysql-library
-    networks:
-      - library-network
+  # ============================================================
+  # BASES DE DATOS
+  # ============================================================
+  mysql-catalog:
+    image: mysql:8.0
+    container_name: mysql-catalog
     environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=catalog-library
+      MYSQL_DATABASE: catalog-library
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: catalog
+      MYSQL_PASSWORD: catalog
     ports:
-      - '3306:3306'
+      - "3306:3306"
     volumes:
-      - mysql-library-vol:/var/lib/mysql
-      - ./persistent-microservices/MYSQL-catalog-library.sql:/docker-entrypoint-initdb.d/1.sql
-      - ./persistent-microservices/MYSQL_store.sql:/docker-entrypoint-initdb.d/2.sql
-
-  backend-catalog-library:
-    container_name: backend-catalog-library
+      - mysql-catalog-data:/var/lib/mysql
+      - ../backends/persistent/catalog-script.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     networks:
-      - library-network
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    command: --default-authentication-plugin=mysql_native_password
+
+  mongodb-reviews:
+    image: mongo:7.0
+    container_name: mongodb-reviews
+    environment:
+      MONGO_INITDB_DATABASE: test
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-reviews-data:/data/db
+      - ../backends/persistent/:/docker-entrypoint-initdb.d:ro
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # RabbitMQ para mensajería
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    user: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  # ============================================================
+  # BACKENDS
+  # ============================================================
+  backend-catalog:
     build:
-      context: persistent-microservices/backend-catalog-library
-      dockerfile: ./docker/Dockerfile
+      context: ../backends/persistent/backend-catalog
+      dockerfile: Dockerfile
+    container_name: backend-catalog
+    environment:
+      MYSQL_DB_HOST: mysql-catalog
+      MYSQL_DB_PORT: 3306
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: password
     ports:
       - "8081:8081"
-    depends_on:
-      - mysql
-    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
-    command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
-    environment:
-      - WAIT_HOSTS=mysql:3306
-      - WAIT_HOSTS_TIMEOUT=250
-      - WAIT_SLEEP_INTERVAL=10
-      - WAIT_HOST_CONNECT_TIMEOUT=20
-
-  frontend-catalog-library:
-    container_name: frontend-catalog-library
     networks:
-      - library-network
-    build:
-      context: frontends/frontend-catalog-library
-      dockerfile: ./docker/Dockerfile
-    ports:
-      - "81:80"
+      - bookstore-network
     depends_on:
-      - backend-catalog-library
+      mysql-catalog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8081/api/getlibros"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
-  # STORE
-  backend-store-library:
-    container_name: backend-store-library
-    networks:
-      - library-network
+  backend-reviews:
     build:
-      context: persistent-microservices/backend-store
-      dockerfile: ./docker/Dockerfile
-    ports:
-      - "8082:8082"
-    depends_on:
-      - mysql
-    #Se agregó la herramienta docker-compose-wait para garantizar que los servicios de mysql estuviesen funcionando al momento de lanza la app de Spring
-    command: sh -c "wget https://github.com/ufoscout/docker-compose-wait/releases/download/2.7.2/wait && chmod +x /wait && /wait && java -jar /usr/share/app.jar"
+      context: ../backends/persistent/backend-reviews
+      dockerfile: Dockerfile
+    container_name: backend-reviews
     environment:
-      - WAIT_HOSTS=mysql:3306
-      - WAIT_HOSTS_TIMEOUT=250
-      - WAIT_SLEEP_INTERVAL=10
-      - WAIT_HOST_CONNECT_TIMEOUT=20
+      MONGODB_HOST: mongodb-reviews
+    ports:
+      - "3000:3000"
+    networks:
+      - bookstore-network
+    depends_on:
+      mongodb-reviews:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/reviews"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  backend-store:
+    build:
+      context: ../backends/persistent/backend-store
+      dockerfile: Dockerfile
+    container_name: backend-store
+    environment:
+      MYSQL_DB_HOST: mysql-catalog
+      MYSQL_DB_PORT: 3306
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_EXCHANGE: amq.direct
+      RABBITMQ_QUEUE: cartshop
+      RABBITMQ_ROUTINGKEY: cartshop.routingkey
+    ports:
+      - "8084:8082"
+    networks:
+      - bookstore-network
+    depends_on:
+      mysql-catalog:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Backend Shipping - Procesa mensajes de compra desde RabbitMQ
+  backend-shipping:
+    build:
+      context: ../backends/persistent/backend-shipping
+      dockerfile: Dockerfile
+    container_name: backend-shipping
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+      LOG_LEVEL: info
+    ports:
+      - "8085:3000"
+    networks:
+      - bookstore-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ============================================================
+  # FRONTENDS
+  # ============================================================
+  frontend-catalog:
+    build:
+      context: ../frontends/frontend-catalog
+      dockerfile: Dockerfile
+    container_name: frontend-catalog
+    environment:
+      CATALOG_URL: http://localhost:8081/api
+    ports:
+      - "8080:80"
+    networks:
+      - bookstore-network
+    depends_on:
+      backend-catalog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend-reviews:
+    build:
+      context: ../frontends/frontend-reviews
+      dockerfile: Dockerfile
+    container_name: frontend-reviews
+    environment:
+      REVIEWS_URL: http://localhost:3000
+    ports:
+      - "8082:80"
+    networks:
+      - bookstore-network
+    depends_on:
+      backend-reviews:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   frontend-store:
-    container_name: frontend-store
-    networks:
-      - library-network
     build:
-      context: frontends/frontend-store
-      dockerfile: ./docker/Dockerfile
+      context: ../frontends/frontend-store
+      dockerfile: Dockerfile
+    container_name: frontend-store
+    environment:
+      CATALOG_URL: http://localhost:8081/api
+      REVIEWS_URL: http://localhost:3000
+      STORE_URL: http://localhost:8084/api
     ports:
-      - "83:80"
+      - "8083:80"
+    networks:
+      - bookstore-network
     depends_on:
-      - backend-store-library
+      backend-catalog:
+        condition: service_healthy
+      backend-reviews:
+        condition: service_healthy
+      backend-store:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
+# ============================================================
+# VOLUMES & NETWORKS
+# ============================================================
 volumes:
-  mysql-library-vol:
-    external: false
-  mongodb-reviews-vol:
-    external: false
+  mysql-catalog-data:
+  mongodb-reviews-data:
+  rabbitmq-data:
+
 networks:
-  library-network:
-    external: true
+  bookstore-network:
+    driver: bridge

@@ -1,128 +1,243 @@
 services:
+  # ============================================================
+  # BASES DE DATOS
+  # ============================================================
+  mysql-catalog:
+    image: mysql:8.0
+    container_name: mysql-catalog
+    environment:
+      MYSQL_DATABASE: catalog-library
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: catalog
+      MYSQL_PASSWORD: catalog
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-catalog-data:/var/lib/mysql
+      - ../backends/persistent/catalog-script.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    command: --default-authentication-plugin=mysql_native_password
 
   mongodb-reviews:
+    image: mongo:7.0
+    container_name: mongodb-reviews
     environment:
-      - MONGO_INITDB_DATABASE=test
+      MONGO_INITDB_DATABASE: test
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
-      - mongodb-reviews-vol:/data/db
-      - ../backends/persistent/:/docker-entrypoint-initdb.d
-    image: 'mongo:5.0.5'
+      - mongodb-reviews-data:/data/db
+      - ../backends/persistent/:/docker-entrypoint-initdb.d:ro
     networks:
-      - book-store-network
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: rabbitmq
+    user: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - bookstore-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
+  # ============================================================
+  # BACKENDS
+  # ============================================================
+  backend-catalog:
+    image: chaphe/backend-catalog-image:1.2
+    container_name: backend-catalog
+    environment:
+      MYSQL_DB_HOST: mysql-catalog
+      MYSQL_DB_PORT: 3306
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: password
+    ports:
+      - "8081:8081"
+    networks:
+      - bookstore-network
+    depends_on:
+      mysql-catalog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8081/api/getlibros"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   backend-reviews:
-    image: 'chaphe/backend-reviews-image:1.1'
+    image: chaphe/backend-reviews-image:1.2
+    container_name: backend-reviews
     environment:
-      - MONGODB_HOST=mongodb-reviews
+      MONGODB_HOST: mongodb-reviews
     ports:
       - "3000:3000"
     networks:
-      - book-store-network
+      - bookstore-network
     depends_on:
-      - mongodb-reviews      
-
-  frontend-reviews:
-    image: 'chaphe/frontend-reviews-image:1.0'
-    environment:
-      - REVIEWS_URL=http://localhost:3000
-    ports:
-      - "82:80"
-    networks:
-      - book-store-network
-    depends_on:
-      - backend-reviews
-
-  mysql-catalog-store:
-    image: 'mysql:8.0.27'
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=catalog-library
-    ports:
-      - '3306:3306'
-    volumes:
-      - mysql-library-vol:/var/lib/mysql
-      - ../backends/persistent/:/docker-entrypoint-initdb.d
-    networks:
-      - book-store-network
+      mongodb-reviews:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "true"]
-      interval: 5s
-      timeout: 2s
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/reviews"]
+      interval: 30s
+      timeout: 5s
       retries: 3
-      start_period: 10s    
-         
-
-  backend-catalog:
-    image: 'chaphe/backend-catalog-image:1.1'
-    ports:
-      - "8081:8081"
-    environment:
-      - MYSQL_DB_HOST=mysql-catalog-store
-      - MYSQL_DB_PORT=3306
-      - MYSQL_DB_USERNAME=root
-      - MYSQL_DB_PASSWORD=password
-    networks:
-      - book-store-network
-    depends_on:
-      - mysql-catalog-store
-
-  frontend-catalog:
-    image: 'chaphe/frontend-catalog-image:1.0'
-    ports:
-      - "81:80"
-    networks:
-      - book-store-network
-    depends_on:
-      - backend-catalog
-
-  rabbitmq:
-    image: rabbitmq:3.9.13-management
-    ports:
-        - 5672:5672
-        - 15672:15672
-    networks:
-        - book-store-network
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest 
-      - RABBITMQ_DEFAULT_PASS=guest
+      start_period: 20s
 
   backend-store:
-    image: 'chaphe/backend-store-image:1.1'
-    ports:
-      - "8082:8082"
-    networks:
-      - book-store-network
+    image: chaphe/backend-store-image:1.2
+    container_name: backend-store
     environment:
-      - MYSQL_DB_HOST=mysql-catalog-store
-      - MYSQL_DB_PORT=3306
-      - MYSQL_DB_USERNAME=root
-      - MYSQL_DB_PASSWORD=password
-      - RABBITMQ_HOST=rabbitmq
+      MYSQL_DB_HOST: mysql-catalog
+      MYSQL_DB_PORT: 3306
+      MYSQL_DB_USERNAME: root
+      MYSQL_DB_PASSWORD: password
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_EXCHANGE: amq.direct
+      RABBITMQ_QUEUE: cartshop
+      RABBITMQ_ROUTINGKEY: cartshop.routingkey
+    ports:
+      - "8084:8082"
+    networks:
+      - bookstore-network
     depends_on:
-      - rabbitmq
-      - mysql-catalog-store
+      mysql-catalog:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8082/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  backend-shipping:
+    image: chaphe/backend-shipping-image:1.2
+    container_name: backend-shipping
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASS: guest
+      RABBITMQ_VHOST: /
+      LOG_LEVEL: info
+    ports:
+      - "8085:3000"
+    networks:
+      - bookstore-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  # ============================================================
+  # FRONTENDS
+  # ============================================================
+  frontend-catalog:
+    image: chaphe/frontend-catalog-image:1.2
+    container_name: frontend-catalog
+    environment:
+      CATALOG_URL: http://localhost:8081/api
+    ports:
+      - "8080:80"
+    networks:
+      - bookstore-network
+    depends_on:
+      backend-catalog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend-reviews:
+    image: chaphe/frontend-reviews-image:1.2
+    container_name: frontend-reviews
+    environment:
+      REVIEWS_URL: http://localhost:3000
+    ports:
+      - "8082:80"
+    networks:
+      - bookstore-network
+    depends_on:
+      backend-reviews:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
   frontend-store:
-    image: 'chaphe/frontend-store-image:1.0'
+    image: chaphe/frontend-store-image:1.2
+    container_name: frontend-store
     environment:
-      - STORE_URL=http://localhost:8082
-      - REVIEWS_URL=http://localhost:3000
-      - CATALOG_URL=http://localhost:8081
+      CATALOG_URL: http://localhost:8081/api
+      REVIEWS_URL: http://localhost:3000
+      STORE_URL: http://localhost:8084/api
     ports:
-      - "80:80"
+      - "8083:80"
     networks:
-      - book-store-network
+      - bookstore-network
+    depends_on:
+      backend-catalog:
+        condition: service_healthy
+      backend-reviews:
+        condition: service_healthy
+      backend-store:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
 
+# ============================================================
+# VOLUMES & NETWORKS
+# ============================================================
 volumes:
-  mysql-library-vol:
-    external: false
-  mongodb-reviews-vol:
-    external: false
+  mysql-catalog-data:
+  mongodb-reviews-data:
+  rabbitmq-data:
 
 networks:
-  book-store-network:
+  bookstore-network:
     driver: bridge
