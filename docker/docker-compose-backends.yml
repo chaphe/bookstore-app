@@ -30,7 +30,7 @@ services:
     environment:
       MONGODB_HOST: mongodb-reviews
     ports:
-      - "3000:3000"
+      - "8082:3000"
     networks:
       - bookstore-network
     depends_on:
@@ -59,7 +59,7 @@ services:
       RABBITMQ_QUEUE: cartshop
       RABBITMQ_ROUTINGKEY: cartshop.routingkey
     ports:
-      - "8084:8082"
+      - "8083:8082"
     networks:
       - bookstore-network
     depends_on:
@@ -85,7 +85,7 @@ services:
       RABBITMQ_VHOST: /
       LOG_LEVEL: info
     ports:
-      - "8085:3000"
+      - "8084:3000"
     networks:
       - bookstore-network
     depends_on:

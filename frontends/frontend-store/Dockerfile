@@ -22,13 +22,13 @@ FROM nginx:1.26-alpine
 RUN chown -R nginx:nginx /usr/share/nginx/html /var/cache/nginx /var/log/nginx /etc/nginx/conf.d
 
 # Config SPA
-COPY docker/nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx.conf /etc/nginx/nginx.conf
 
 # Build output
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Template para runtime config
-COPY docker/env.sample.js /usr/share/nginx/html/env.sample.js
+COPY config/env.sample.js /usr/share/nginx/html/env.sample.js
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
@@ -37,9 +37,9 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
 EXPOSE 80
 
 # Variable por defecto
-ENV CATALOG_URL=http://backend-catalog:8081/api
-ENV REVIEWS_URL=http://backend-reviews:3000
-ENV STORE_URL=http://backend-store:8082/api
+ENV CATALOG_URL=/catalog
+ENV REVIEWS_URL=
+ENV STORE_URL=/store
 
 # Runtime substitution
 CMD /bin/sh -c "envsubst '\$CATALOG_URL \$REVIEWS_URL \$STORE_URL' < /usr/share/nginx/html/env.sample.js > /usr/share/nginx/html/env.js && exec nginx -g 'daemon off;'"

@@ -5,10 +5,8 @@ services:
   frontend-catalog:
     image: chaphe/frontend-catalog-image:1.2
     container_name: frontend-catalog
-    environment:
-      CATALOG_URL: http://localhost:8081/api
     ports:
-      - "8080:80"
+      - "8091:80"
     networks:
       - bookstore-network
     depends_on:
@@ -24,10 +22,8 @@ services:
   frontend-reviews:
     image: chaphe/frontend-reviews-image:1.2
     container_name: frontend-reviews
-    environment:
-      REVIEWS_URL: http://localhost:3000
     ports:
-      - "8082:80"
+      - "8092:80"
     networks:
       - bookstore-network
     depends_on:
@@ -43,12 +39,8 @@ services:
   frontend-store:
     image: chaphe/frontend-store-image:1.2
     container_name: frontend-store
-    environment:
-      CATALOG_URL: http://localhost:8081/api
-      REVIEWS_URL: http://localhost:3000
-      STORE_URL: http://localhost:8084/api
     ports:
-      - "8083:80"
+      - "8093:80"
     networks:
       - bookstore-network
     depends_on:

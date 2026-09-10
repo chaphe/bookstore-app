@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   reviewsUrl:
-    'http://localhost:3000'
+    ''
 };
 
 /*

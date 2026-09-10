@@ -2,9 +2,9 @@ import axios, { AxiosInstance, AxiosError } from 'axios';
 import type { Book, Cart, CartItem, Review, AddCartRequest, DeleteCartRequest, BuyCartRequest, GetCartRequest, ApiError } from '../types';
 
 const runtimeEnv = (typeof window !== 'undefined' && (window as any).env) || {};
-const CATALOG_URL = runtimeEnv.CATALOG_URL || import.meta.env.VITE_CATALOG_URL || 'http://localhost:8081/api';
-const REVIEWS_URL = runtimeEnv.REVIEWS_URL || import.meta.env.VITE_REVIEWS_URL || 'http://localhost:3000';
-const STORE_URL = runtimeEnv.STORE_URL || import.meta.env.VITE_STORE_URL || 'http://localhost:8082/api';
+const CATALOG_URL = runtimeEnv.CATALOG_URL || import.meta.env.VITE_CATALOG_URL || '/catalog';
+const REVIEWS_URL = runtimeEnv.REVIEWS_URL || import.meta.env.VITE_REVIEWS_URL || '';
+const STORE_URL = runtimeEnv.STORE_URL || import.meta.env.VITE_STORE_URL || '/store';
 
 const createApiClient = (baseURL: string): AxiosInstance => {
   const client = axios.create({

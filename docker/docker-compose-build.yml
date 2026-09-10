@@ -44,7 +44,6 @@ services:
       retries: 5
       start_period: 10s
 
-  # RabbitMQ para mensajería
   rabbitmq:
     image: rabbitmq:3.12-management
     container_name: rabbitmq
@@ -67,7 +66,7 @@ services:
       start_period: 20s
 
   # ============================================================
-  # BACKENDS
+  # BACKENDS (808X)
   # ============================================================
   backend-catalog:
     build:
@@ -101,7 +100,7 @@ services:
     environment:
       MONGODB_HOST: mongodb-reviews
     ports:
-      - "3000:3000"
+      - "8082:3000"
     networks:
       - bookstore-network
     depends_on:
@@ -132,7 +131,7 @@ services:
       RABBITMQ_QUEUE: cartshop
       RABBITMQ_ROUTINGKEY: cartshop.routingkey
     ports:
-      - "8084:8082"
+      - "8083:8082"
     networks:
       - bookstore-network
     depends_on:
@@ -147,7 +146,6 @@ services:
       retries: 3
       start_period: 30s
 
-  # Backend Shipping - Procesa mensajes de compra desde RabbitMQ
   backend-shipping:
     build:
       context: ../backends/persistent/backend-shipping
@@ -161,7 +159,7 @@ services:
       RABBITMQ_VHOST: /
       LOG_LEVEL: info
     ports:
-      - "8085:3000"
+      - "8084:3000"
     networks:
       - bookstore-network
     depends_on:
@@ -175,17 +173,15 @@ services:
       start_period: 20s
 
   # ============================================================
-  # FRONTENDS
+  # FRONTENDS (809X)
   # ============================================================
   frontend-catalog:
     build:
       context: ../frontends/frontend-catalog
       dockerfile: Dockerfile
     container_name: frontend-catalog
-    environment:
-      CATALOG_URL: http://localhost:8081/api
     ports:
-      - "8080:80"
+      - "8091:80"
     networks:
       - bookstore-network
     depends_on:
@@ -203,10 +199,8 @@ services:
       context: ../frontends/frontend-reviews
       dockerfile: Dockerfile
     container_name: frontend-reviews
-    environment:
-      REVIEWS_URL: http://localhost:3000
     ports:
-      - "8082:80"
+      - "8092:80"
     networks:
       - bookstore-network
     depends_on:
@@ -224,12 +218,8 @@ services:
       context: ../frontends/frontend-store
       dockerfile: Dockerfile
     container_name: frontend-store
-    environment:
-      CATALOG_URL: http://localhost:8081/api
-      REVIEWS_URL: http://localhost:3000
-      STORE_URL: http://localhost:8084/api
     ports:
-      - "8083:80"
+      - "8093:80"
     networks:
       - bookstore-network
     depends_on:

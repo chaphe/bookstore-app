@@ -39,7 +39,7 @@ declare global {
 const runtimeCatalogUrl = (typeof window !== 'undefined' && window.env?.CATALOG_URL)
   ? window.env.CATALOG_URL
   : null;
-const host = process.env.REACT_APP_CATALOG_URL || runtimeCatalogUrl || "http://localhost:8081/api";
+const host = process.env.REACT_APP_CATALOG_URL || runtimeCatalogUrl || "/api";
 
 const libroVacio: Libro = {
   titulo: "",
